@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/marketplace.schema.json",
+  "name": "crafter-station-skills",
+  "version": "0.1.0",
+  "description": "Agent Skills for context engineering and agentic workflows. Battle-tested patterns from production codebases.",
+  "owner": "crafter-station",
+  "repository": "https://github.com/crafter-station/skills",
+  "plugins": [
+    {
+      "name": "intent-layer",
+      "description": "Set up hierarchical AGENTS.md infrastructure so agents navigate codebases like senior engineers. Use for new projects needing context structure or existing repos that need better agent performance.",
+      "path": "context-engineering/intent-layer",
+      "author": "Railly Hugo",
+      "category": "context-engineering",
+      "keywords": ["agents", "context", "AGENTS.md", "CLAUDE.md", "codebase", "navigation"]
+    }
+  ]
+}
