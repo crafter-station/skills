@@ -21,27 +21,24 @@ Agent Skills for Claude Code, Cursor, Copilot, and other AI coding assistants.
 
 ## Installation
 
-### Claude Code
+### Quick Install (Recommended)
 
 ```bash
-# Add marketplace
-/plugin marketplace add https://github.com/crafter-station/skills
+# Install all skills globally
+npx skills add crafter-station/skills -g
 
-# Install a skill
-/plugin install intent-layer@crafter-station-skills
+# Or install a specific skill
+npx skills add crafter-station/skills --skill intent-layer -g
 ```
+
+Works with Claude Code, Codex, Cursor, Copilot, OpenCode, and [10+ more agents](https://github.com/vercel-labs/add-skill#available-agents).
 
 ### Manual Installation
 
 ```bash
-# Clone and copy to your skills directory
 git clone https://github.com/crafter-station/skills.git
 cp -r skills/context-engineering/intent-layer ~/.claude/skills/
 ```
-
-### Cursor / Copilot
-
-Skills follow the open [Agent Skills standard](https://agentskills.io). Copy any skill's `SKILL.md` to your project or user skills directory.
 
 ## Structure
 
