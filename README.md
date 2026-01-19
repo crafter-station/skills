@@ -1,47 +1,29 @@
 # crafter-station/skills
 
-skills for ai agents.
+Curated skills for AI agents.
 
-## install
+## Install
 
 ```bash
 npx skills add crafter-station/skills --skill intent-layer -g
 ```
 
-works with claude code, cursor, copilot, and [10+ more agents](https://github.com/vercel-labs/add-skill#available-agents).
+Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.com/vercel-labs/add-skill#available-agents).
 
-## context-engineering
+## Skills
 
-skills that give agents the context your senior devs have.
+### Context Engineering
 
-| skill | what it does |
+| Skill | What it does |
 |-------|--------------|
-| [intent-layer](./context-engineering/intent-layer/) | AGENTS.md files so agents stop grepping in the dark |
+| [intent-layer](./context-engineering/intent-layer/) | Set up AGENTS.md files so agents navigate your codebase like senior engineers |
 
-### coming soon
+## Contributing
 
-| skill | what it does |
-|-------|--------------|
-| context-bundler | task-specific context selection |
-| architecture-map | explicit system boundaries |
-| invariants-capture | extract rules from git history |
+1. Fork
+2. Follow the [Agent Skills spec](https://agentskills.io/specification)
+3. PR
 
-## stack
-
-domain knowledge for specific tools. coming soon.
-
-| skill | what it does |
-|-------|--------------|
-| clerk | auth patterns and setup |
-| vercel | deploy patterns and env vars |
-| supabase | database patterns |
-
-## contributing
-
-1. fork
-2. follow the [agent skills spec](https://agentskills.io/specification)
-3. pr
-
-## license
+## License
 
 MIT
