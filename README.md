@@ -38,4 +38,4 @@ these skills give agents the context your senior devs have.
 
 ## license
 
-Apache 2.0
+MIT
