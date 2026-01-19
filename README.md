@@ -1,4 +1,4 @@
-# crafter-station/skills
+# crafter skills
 
 Curated skills for AI agents.
 
