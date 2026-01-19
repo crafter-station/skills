@@ -1,6 +1,6 @@
 # crafter-station/skills
 
-context engineering skills for ai agents.
+skills for ai agents.
 
 ## install
 
@@ -10,7 +10,9 @@ npx skills add crafter-station/skills --skill intent-layer -g
 
 works with claude code, cursor, copilot, and [10+ more agents](https://github.com/vercel-labs/add-skill#available-agents).
 
-## skills
+## context-engineering
+
+skills that give agents the context your senior devs have.
 
 | skill | what it does |
 |-------|--------------|
@@ -24,11 +26,15 @@ works with claude code, cursor, copilot, and [10+ more agents](https://github.co
 | architecture-map | explicit system boundaries |
 | invariants-capture | extract rules from git history |
 
-## why
+## stack
 
-your agent burns 40k tokens on dead ends because it doesn't know where to look.
+domain knowledge for specific tools. coming soon.
 
-these skills give agents the context your senior devs have.
+| skill | what it does |
+|-------|--------------|
+| clerk | auth patterns and setup |
+| vercel | deploy patterns and env vars |
+| supabase | database patterns |
 
 ## contributing
 
