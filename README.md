@@ -20,7 +20,7 @@ Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.co
 
 | Skill | What it does |
 |-------|--------------|
-| [intent-layer](./context-engineering/intent-layer/) | Set up AGENTS.md files so agents navigate your codebase like senior engineers |
+| [intent-layer](./context-engineering/intent-layer/) | Set up AGENTS.md files so agents navigate your codebase like senior engineers. Built on [The Intent Layer](https://www.intent-systems.com/learn/intent-layer) by Tyler Brandt |
 
 ### Meta
 

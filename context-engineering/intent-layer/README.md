@@ -81,4 +81,6 @@ Projects using Intent Layer:
 
 Built by [Railly Hugo](https://railly.dev) for [Crafter Station](https://crafterstation.com).
 
-Inspired by [Anthropic's context engineering guide](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct).
+Built on [The Intent Layer](https://www.intent-systems.com/learn/intent-layer) by Tyler Brandt. His [AI Adoption Roadmap](https://www.intent-systems.com/learn/ai-adoption-roadmap) maps the stages most teams are stuck at.
+
+Context engineering framework from [DAIR.AI](https://www.promptingguide.ai) and [LangChain](https://blog.langchain.com/the-rise-of-context-engineering/).
