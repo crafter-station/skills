@@ -1,0 +1,198 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "skill_name": {
+      "type": "string",
+      "description": "Hyphen-case name for the skill (e.g., 'pdf-editor', 'firecrawl-scraper')"
+    },
+    "description": {
+      "type": "string",
+      "description": "Comprehensive description including WHEN to use the skill. Must include specific triggers and use cases. Max 1024 chars."
+    },
+    "overview": {
+      "type": "string",
+      "description": "1-2 sentence summary of what the skill enables"
+    },
+    "triggers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "User phrases/scenarios that should trigger this skill (e.g., 'scrape this website', 'extract data from URL')"
+    },
+    "workflows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Workflow name (e.g., 'Basic Scraping', 'Batch Processing')"
+          },
+          "description": {
+            "type": "string",
+            "description": "What this workflow accomplishes"
+          },
+          "steps": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Step-by-step instructions in imperative form"
+          },
+          "code_example": {
+            "type": "object",
+            "properties": {
+              "language": { "type": "string" },
+              "code": { "type": "string" }
+            },
+            "description": "Optional code example for this workflow"
+          }
+        },
+        "required": ["name", "description", "steps"]
+      },
+      "description": "Main workflows/operations the tool supports"
+    },
+    "api_endpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"]
+          },
+          "path": {
+            "type": "string",
+            "description": "API endpoint path (e.g., '/v1/scrape')"
+          },
+          "description": {
+            "type": "string",
+            "description": "What this endpoint does"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "type": { "type": "string" },
+                "required": { "type": "boolean" },
+                "description": { "type": "string" },
+                "default": { "type": "string" }
+              },
+              "required": ["name", "type", "required", "description"]
+            }
+          },
+          "response_example": {
+            "type": "string",
+            "description": "Example JSON response"
+          }
+        },
+        "required": ["method", "path", "description"]
+      },
+      "description": "API endpoints with parameters (if applicable)"
+    },
+    "authentication": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "Auth method (e.g., 'API Key', 'Bearer Token', 'OAuth2')"
+        },
+        "header_name": {
+          "type": "string",
+          "description": "Header name for auth (e.g., 'Authorization', 'X-API-Key')"
+        },
+        "env_variable": {
+          "type": "string",
+          "description": "Suggested environment variable name"
+        },
+        "details": {
+          "type": "string",
+          "description": "Additional auth instructions"
+        }
+      },
+      "description": "How to authenticate with the service"
+    },
+    "sdk_examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string",
+            "description": "Programming language (e.g., 'python', 'typescript', 'curl')"
+          },
+          "title": {
+            "type": "string",
+            "description": "Example title (e.g., 'Basic Usage', 'With Options')"
+          },
+          "code": {
+            "type": "string",
+            "description": "Complete, runnable code example"
+          },
+          "description": {
+            "type": "string",
+            "description": "What this example demonstrates"
+          }
+        },
+        "required": ["language", "code"]
+      },
+      "description": "Code examples in different languages"
+    },
+    "common_patterns": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Common usage patterns and best practices"
+    },
+    "gotchas": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Common pitfalls, edge cases, and things to watch out for"
+    },
+    "references_needed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "filename": {
+            "type": "string",
+            "description": "Suggested filename (e.g., 'api-reference.md', 'advanced-examples.md')"
+          },
+          "content_type": {
+            "type": "string",
+            "enum": ["api_docs", "examples", "schemas", "configuration", "troubleshooting"]
+          },
+          "description": {
+            "type": "string",
+            "description": "What this reference file should contain"
+          },
+          "content_summary": {
+            "type": "string",
+            "description": "Summary of content to include (will be expanded later)"
+          }
+        },
+        "required": ["filename", "content_type", "description"]
+      },
+      "description": "Additional reference files needed for progressive disclosure"
+    },
+    "mcp_tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tool_name": {
+            "type": "string",
+            "description": "MCP tool name if available (e.g., 'mcp__firecrawl__firecrawl_scrape')"
+          },
+          "description": {
+            "type": "string"
+          },
+          "when_to_use": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Related MCP tools if the service has an MCP server"
+    }
+  },
+  "required": ["skill_name", "description", "overview", "workflows"]
+}

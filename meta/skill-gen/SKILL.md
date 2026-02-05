@@ -1,6 +1,6 @@
 ---
 name: skill-gen
-description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.
+description: Auto-generate Claude skills from documentation URLs using Firecrawl agent. Use when user wants to create a skill from docs, API references, or tool homepages. Asks up to 3 clarifying questions before deep extraction. Supports topic focus (e.g., "only auth endpoints") and outputs to local .claude/skills/ by default.
 license: Complete terms in LICENSE.txt
 ---
 
@@ -354,3 +354,149 @@ After testing the skill, users may request improvements. Often this happens righ
 2. Notice struggles or inefficiencies
 3. Identify how SKILL.md or bundled resources should be updated
 4. Implement changes and test again
+
+## Auto-Generate Skills from URL
+
+Use Firecrawl's agent endpoint to automatically generate skills from documentation URLs.
+
+### Usage
+
+```
+/docs-to-skill https://docs.example.com
+/docs-to-skill https://docs.example.com --focus "authentication and OAuth"
+/docs-to-skill https://docs.example.com --model pro
+/docs-to-skill https://docs.example.com --global
+```
+
+### Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `URL` | Documentation URL (required) |
+| `--focus "topic"` | Focus extraction on specific topics (e.g., "only webhooks", "auth endpoints") |
+| `--model pro` | Use `spark-1-pro` for complex docs (default: `spark-1-mini`) |
+| `--global` | Save to `~/.claude/skills/` instead of local |
+
+### Output Location
+
+**Local by default**: Skills are created in `.claude/skills/{skill-name}/` of the current project.
+
+| Flag | Location | Use Case |
+|------|----------|----------|
+| (none) | `.claude/skills/` | Project-specific skill |
+| `--global` | `~/.claude/skills/` | Share across all projects |
+
+### Workflow
+
+#### Phase 1: Clarification (up to 3 questions)
+
+Before deep extraction, ensure clarity on what to extract.
+
+1. **Quick scan**: Use `mcp__firecrawl__firecrawl_map` to get site structure
+2. **Ask clarifying questions** (max 3, use AskUserQuestion tool):
+   - What sections/topics to focus on?
+   - What's the primary use case for this skill?
+   - Any specific workflows to prioritize?
+3. **Confirm scope** before proceeding to deep extraction
+
+**Skip clarification if:**
+- User provided `--focus` parameter
+- URL is a single-page API reference
+- User explicitly says "extract everything"
+
+#### Phase 2: Deep Extraction
+
+4. **Load Firecrawl MCP**: Search and load `mcp__firecrawl__firecrawl_agent` tool
+
+5. **Extract**: Call `mcp__firecrawl__firecrawl_agent` with:
+   - `urls`: Target documentation URL(s)
+   - `prompt`: Skill extraction prompt (from `references/skill-prompt-template.md`) + confirmed focus
+   - `schema`: JSON schema (from `references/firecrawl-skill-schema.json`)
+
+#### Phase 3: Generation
+
+6. **Parse**: Process structured JSON response into skill components
+
+7. **Generate**: Create skill directory structure:
+   ```
+   {skill-name}/
+   ├── SKILL.md          # Generated from extraction
+   ├── references/       # If content exceeds 500 lines
+   │   ├── api-reference.md
+   │   └── examples.md
+   └── scripts/          # If utility scripts identified
+   ```
+
+8. **Validate**: Run `scripts/quick_validate.py` on generated skill
+
+9. **Output**: Return path to generated skill
+
+### Model Selection
+
+| Documentation Type | Recommended Model |
+|--------------------|-------------------|
+| Simple API (1-5 endpoints) | `spark-1-mini` (default) |
+| Complex framework docs | `spark-1-pro` |
+| Multiple SDKs/languages | `spark-1-pro` |
+| Single-page reference | `spark-1-mini` |
+
+### Implementation
+
+```python
+# 1. Load the schema and prompt template
+schema = json.load(open('references/firecrawl-skill-schema.json'))
+prompt = open('references/skill-prompt-template.md').read()
+
+# 2. Call Firecrawl agent
+result = mcp__firecrawl__firecrawl_agent(
+    urls=[target_url],
+    prompt=prompt,
+    schema=schema
+)
+
+# 3. Parse response and generate files
+skill_data = result['data']
+generate_skill_files(skill_data)
+```
+
+### Examples
+
+```bash
+# Full docs extraction
+/docs-to-skill https://docs.firecrawl.dev
+
+# Focus on specific topic
+/docs-to-skill https://docs.clerk.com --focus "webhooks and events"
+
+# Complex docs with pro model
+/docs-to-skill https://docs.stripe.com --focus "subscriptions" --model pro
+```
+
+**Output:**
+```
+Created skill: firecrawl/
+├── SKILL.md (245 lines)
+├── references/
+│   ├── agent-api.md
+│   └── scrape-examples.md
+└── Validated: OK
+```
+
+### Handling Large Documentation
+
+For documentation sites with many pages:
+1. Agent automatically maps and navigates relevant sections
+2. Content split into SKILL.md (core) + references/ (detailed)
+3. Progressive disclosure pattern applied automatically
+
+### After Generation
+
+1. Review generated SKILL.md for accuracy
+2. Test the skill on real tasks
+3. Iterate using standard skill editing process (Step 4-6)
+
+### Cost Considerations
+
+- `spark-1-mini`: ~5-15 credits per skill generation
+- `spark-1-pro`: ~15-50 credits per skill generation
+- Firecrawl offers 5 free daily agent runs for testing
