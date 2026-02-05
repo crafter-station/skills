@@ -5,7 +5,11 @@ Curated skills for AI agents.
 ## Install
 
 ```bash
+# Install intent-layer
 npx skills add crafter-station/skills --skill intent-layer -g
+
+# Install skill-gen
+npx skills add crafter-station/skills --skill skill-gen -g
 ```
 
 Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.com/vercel-labs/add-skill#available-agents).
