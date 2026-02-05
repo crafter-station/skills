@@ -16,11 +16,11 @@
     },
     {
       "name": "skill-gen",
-      "description": "Guide for creating effective agent skills. Use when creating a new skill (or updating an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations. Includes init, validate, and package scripts for the complete skill development lifecycle.",
+      "description": "Auto-generate agent skills from documentation using Firecrawl. Ask Claude to research any docs or pass a URL directly - it extracts patterns, generates SKILL.md with proper frontmatter, and creates reference files. Use when you need a skill for an API, framework, or tool but don't want to write it manually.",
       "path": "meta/skill-gen",
       "author": "Railly Hugo",
       "category": "meta",
-      "keywords": ["skills", "meta", "skill-creation", "agent-skills", "development", "tooling", "productivity"]
+      "keywords": ["skills", "meta", "skill-generation", "firecrawl", "docs-extraction", "automation", "ai-agents"]
     }
   ]
 }
