@@ -18,6 +18,12 @@ Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.co
 |-------|--------------|
 | [intent-layer](./context-engineering/intent-layer/) | Set up AGENTS.md files so agents navigate your codebase like senior engineers |
 
+### Meta
+
+| Skill | What it does |
+|-------|--------------|
+| [skill-gen](./meta/skill-gen/) | Create effective agent skills with guided workflows, validation, and packaging tools |
+
 ## Contributing
 
 1. Fork
