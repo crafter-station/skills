@@ -21,6 +21,14 @@
       "author": "Railly Hugo",
       "category": "meta",
       "keywords": ["skills", "meta", "skill-generation", "firecrawl", "docs-extraction", "automation", "ai-agents"]
+    },
+    {
+      "name": "skillkit",
+      "description": "Local-first analytics for AI agent skills. Tracks usage with sparklines, measures context budget, and prunes unused skills. Supports Claude Code and OpenCode.",
+      "path": "meta/skillkit",
+      "author": "Railly Hugo",
+      "category": "meta",
+      "keywords": ["skills", "analytics", "usage", "context-budget", "prune", "sparklines", "claude-code", "opencode"]
     }
   ]
 }

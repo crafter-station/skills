@@ -10,6 +10,9 @@ npx skills add crafter-station/skills --skill intent-layer -g
 
 # Install skill-gen
 npx skills add crafter-station/skills --skill skill-gen -g
+
+# Install skillkit
+npx skills add crafter-station/skills --skill skillkit -g
 ```
 
 Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.com/vercel-labs/add-skill#available-agents).
@@ -27,6 +30,7 @@ Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.co
 | Skill | What it does |
 |-------|--------------|
 | [skill-gen](./meta/skill-gen/) | Create effective agent skills with guided workflows, validation, and packaging tools |
+| [skillkit](./meta/skillkit/) | Local-first analytics for AI agent skills. Tracks usage, measures context budget, prunes unused skills |
 
 ## Contributing
 
