@@ -42,7 +42,7 @@ SkillKit is a standalone CLI. Run with `npx @crafter/skillkit <command>` or inst
 
 ### Filters
 
-- Any command with `--claude` or `--opencode` to filter by agent
+- Any command with `--claude`, `--cursor`, `--codex`, `--gemini`, or `--opencode` to filter by agent
 
 ## When to Use
 
@@ -66,4 +66,4 @@ SkillKit is a standalone CLI. Run with `npx @crafter/skillkit <command>` or inst
 
 ## How It Works
 
-Discovers skills for 15+ agents (Claude Code, Cursor, Codex, Windsurf, Gemini CLI, Cline, Roo Code, Continue, OpenCode, GitHub Copilot, OpenHands, Amp, Goose, Kilo Code, Trae). Scans skill directories and project-local `.claude/skills/`. Indexes JSONL sessions extracting `Skill` tool_use blocks. Deduplicates skills.sh symlinks across agents. All data local in `~/.skillkit/analytics.db`.
+Discovers skills across 12 agents: Claude Code, Cursor, Codex, Gemini CLI, Windsurf, Amp, Continue, Goose, Kiro, Roo Code, Antigravity, OpenCode. Session connectors parse JSONL/JSON traces for Claude, Cursor, Codex, Gemini, and OpenCode. Deduplicates skills.sh symlinks via inode. All data local in `~/.skillkit/analytics.db`.
