@@ -22,6 +22,8 @@ SkillKit is a standalone CLI. Run with `npx @crafter/skillkit <command>` or inst
 
 ### Cost Analysis
 
+- `skillkit context` - Context tax: tokens + cost of CLAUDE.md, skills, memory per API call
+- `skillkit context --opus --turns 60` - Custom model pricing and session length
 - `skillkit burn` - Daily burn rate, model breakdown, runway projection
 - `skillkit burn --days 7 --plan 200` - Custom range and budget
 
@@ -46,6 +48,7 @@ SkillKit is a standalone CLI. Run with `npx @crafter/skillkit <command>` or inst
 
 - "which skills do I use the most?" → `skillkit stats`
 - "are there unused skills?" → `skillkit health` then `skillkit prune`
+- "what's my context tax?" → `skillkit context`
 - "how much am I spending?" → `skillkit burn`
 - "do any skills conflict?" → `skillkit conflicts`
 - "is this skill bloated?" → `skillkit coverage <path>`
@@ -55,10 +58,11 @@ SkillKit is a standalone CLI. Run with `npx @crafter/skillkit <command>` or inst
 
 1. First time? `skillkit stats` — auto-discovers and indexes everything
 2. Full picture? `skillkit stats --all --days 90`
-3. Cost check? `skillkit burn`
-4. Conflicts? `skillkit conflicts`
-5. Dead weight? `skillkit coverage ~/.claude/skills/my-skill/`
-6. Cleanup? `skillkit health` then `skillkit prune --yes`
+3. Context tax? `skillkit context`
+4. Cost check? `skillkit burn`
+5. Conflicts? `skillkit conflicts`
+6. Dead weight? `skillkit coverage ~/.claude/skills/my-skill/`
+7. Cleanup? `skillkit health` then `skillkit prune --yes`
 
 ## How It Works
 
