@@ -29,6 +29,14 @@
       "author": "Railly Hugo",
       "category": "meta",
       "keywords": ["skills", "analytics", "usage", "context-budget", "prune", "sparklines", "claude-code", "opencode"]
+    },
+    {
+      "name": "spoti-cli",
+      "description": "Create Spotify playlists using spoti-cli CLI. Interprets mood, context, or vault state into search queries and recommendations. Supports vault-aware playlist generation by reading Obsidian daily logs.",
+      "path": "spotify/spoti-cli",
+      "author": "Railly Hugo",
+      "category": "spotify",
+      "keywords": ["spotify", "playlist", "music", "cli", "ai-agents", "mood", "obsidian", "vault"]
     }
   ]
 }
