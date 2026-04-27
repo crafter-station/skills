@@ -35,11 +35,11 @@ Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.co
 | [skill-gen](./meta/skill-gen/) | Create effective agent skills with guided workflows, validation, and packaging tools |
 | [skillkit](./meta/skillkit/) | Local-first analytics for AI agent skills. Tracks usage, measures context budget, prunes unused skills |
 
-### Spotify
+### Music
 
 | Skill | What it does |
 |-------|--------------|
-| [spoti-cli](./spotify/spoti-cli/) | Create Spotify playlists from natural language, mood, or Obsidian vault context. Wraps the [spoti-cli](https://spoti-cli.crafter.run) CLI |
+| [spoti-cli](./spoti-cli/) | Create Spotify playlists from natural language, mood, or Obsidian vault context. Wraps the [spoti-cli](https://spoti-cli.crafter.run) CLI |
 
 ## Contributing
 

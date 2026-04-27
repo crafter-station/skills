@@ -12,14 +12,13 @@ description: |
 
 ## Prerequisites
 
-Check auth: `spoti-cli me --json`. If it fails, run setup:
+Check auth: `spoti-cli me --json`. If it fails:
 
-1. Install: `bun add -g spoti-cli`
-2. Create Spotify app at [developer.spotify.com/dashboard/create](https://developer.spotify.com/dashboard/create):
-   - Set redirect URI to `http://127.0.0.1:8888/callback`
-   - Check **Web API**
-   - Copy the **Client ID**
-3. Auth: `spoti-cli auth --client-id <CLIENT_ID>`
+1. Install: `bun add -g @crafter/spoti-cli`
+2. Run `spoti-cli auth` — it prints the exact dashboard URL, redirect URI (`http://127.0.0.1:8888/callback`), and API checkbox (Web API) to use
+3. Re-run with `spoti-cli auth --client-id <CLIENT_ID>` once you have the ID
+
+The CLI walks the user through Spotify dashboard setup. Don't repeat the steps yourself — point them at `spoti-cli auth` and let them paste the output.
 
 ## Workflow
 
