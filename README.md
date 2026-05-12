@@ -16,6 +16,9 @@ npx skills add crafter-station/skills --skill skillkit -g
 
 # Install spoti-cli
 npx skills add crafter-station/skills --skill spoti-cli -g
+
+# Install supply-chain-audit
+npx skills add crafter-station/skills --skill supply-chain-audit -g
 ```
 
 Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.com/vercel-labs/add-skill#available-agents).
@@ -40,6 +43,12 @@ Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.co
 | Skill | What it does |
 |-------|--------------|
 | [spoti-cli](./spoti-cli/) | Create Spotify playlists from natural language, mood, or Obsidian vault context. Wraps the [spoti-cli](https://spoti-cli.crafter.run) CLI |
+
+### Security
+
+| Skill | What it does |
+|-------|--------------|
+| [supply-chain-audit](./supply-chain-audit/) | Read-only scanner for npm/PyPI supply-chain compromise (Shai-Hulud 2.0, Mini Shai-Hulud / TeamPCP, Axios DPRK). Versioned IOC pack, three-phase scan, PASS/FAIL verdict, and 48h bake-period remediation |
 
 ## Contributing
 

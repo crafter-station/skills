@@ -1,0 +1,169 @@
+{
+  "_schema": {
+    "version": "field is the IOC pack date, bump on every append",
+    "campaign_fields": {
+      "id": "kebab-case slug, unique",
+      "name": "human-readable campaign name",
+      "date": "YYYY-MM-DD disclosure date",
+      "attribution": "attacker group or null",
+      "attack_windows_utc": "array of {start, end} ISO 8601 UTC strings — when malicious versions were live",
+      "compromised_scopes": "array of npm scopes whose packages are at risk (e.g. @tanstack)",
+      "compromised_packages": "array of unscoped package names",
+      "compromised_pypi": "array of PyPI package names",
+      "payload_files": "filenames the malware drops or smuggles into tarballs",
+      "payload_hashes_sha256": "object {filename: sha256}",
+      "string_iocs": "free-text strings to grep for in lockfiles, source, configs",
+      "optional_dependency_iocs": "prefixes that, if found in an optionalDependencies value, signal compromise",
+      "persistence": "object {macos: [], linux: [], windows: [], shared: []} of paths to check",
+      "references": "URLs to disclosures / postmortems"
+    }
+  },
+  "version": "2026-05-12",
+  "campaigns": [
+    {
+      "id": "mini-shai-hulud-may-2026",
+      "name": "Mini Shai-Hulud (TeamPCP)",
+      "date": "2026-05-11",
+      "attribution": "TeamPCP",
+      "attack_windows_utc": [
+        {"start": "2026-05-11T19:20:00Z", "end": "2026-05-11T19:30:00Z"}
+      ],
+      "compromised_scopes": [
+        "@tanstack",
+        "@uipath",
+        "@mistralai",
+        "@opensearch-project",
+        "@squawk",
+        "@tallyui",
+        "@beproduct",
+        "@draftlab",
+        "@draftauth",
+        "@taskflow-corp",
+        "@tolka"
+      ],
+      "compromised_packages": [],
+      "compromised_pypi": ["mistralai", "guardrails-ai"],
+      "payload_files": ["router_init.js"],
+      "payload_hashes_sha256": {
+        "router_init.js": "ab4fcadaec49c03278063dd269ea5eef82d24f2124a8e15d7b90f2fa8601266c"
+      },
+      "string_iocs": [
+        "git-tanstack.com",
+        "api.masscan.cloud",
+        "getsession.org",
+        "79ac49ee",
+        "@tanstack/setup"
+      ],
+      "optional_dependency_iocs": [
+        "github:tanstack/router#"
+      ],
+      "persistence": {
+        "macos": [
+          "~/Library/LaunchAgents/com.user.gh-token-monitor.plist"
+        ],
+        "linux": [
+          "~/.config/systemd/user/gh-token-monitor.service"
+        ],
+        "shared": [
+          "~/.local/bin/gh-token-monitor.sh",
+          "~/.config/gh-token-monitor",
+          "~/.claude/setup.mjs",
+          "~/.vscode/setup.mjs",
+          "/tmp/tmp.ts018051808.lock"
+        ]
+      },
+      "dead_mans_switch": {
+        "polls": "https://api.github.com",
+        "interval_seconds": 60,
+        "trigger": "stolen GitHub PAT returns 401 (revoked)",
+        "action": "rm -rf $HOME"
+      },
+      "references": [
+        "https://www.wiz.io/blog/mini-shai-hulud-strikes-again-tanstack-more-npm-packages-compromised",
+        "https://www.aikido.dev/blog/mini-shai-hulud-is-back-tanstack-compromised",
+        "https://socket.dev/blog/tanstack-npm-packages-compromised-mini-shai-hulud-supply-chain-attack",
+        "https://tanstack.com/blog/npm-supply-chain-compromise-postmortem",
+        "https://thehackernews.com/2026/05/mini-shai-hulud-worm-compromises.html"
+      ]
+    },
+    {
+      "id": "shai-hulud-2-nov-2025",
+      "name": "Shai-Hulud 2.0",
+      "date": "2025-11-24",
+      "attribution": null,
+      "attack_windows_utc": [
+        {"start": "2025-11-24T04:11:00Z", "end": "2025-11-24T09:30:00Z"}
+      ],
+      "compromised_scopes": ["@zapier", "@postman"],
+      "compromised_packages": [
+        "posthog-js",
+        "posthog-node",
+        "posthog-react-native"
+      ],
+      "compromised_pypi": [],
+      "payload_files": [
+        "setup_bun.js",
+        "bun_environment.js"
+      ],
+      "payload_hashes_sha256": {},
+      "string_iocs": [
+        "trufflehog",
+        "bun_environment",
+        "setup_bun"
+      ],
+      "optional_dependency_iocs": [],
+      "persistence": {
+        "shared": [
+          "/tmp/setup_bun.js",
+          "/tmp/bun_environment.js",
+          "~/.bun-environment"
+        ]
+      },
+      "notes": "Preinstall execution (not postinstall), widened CI/CD blast radius. ~796 unique packages, 1092 versions, 25000+ malicious GitHub repos created across ~350 users.",
+      "references": [
+        "https://unit42.paloaltonetworks.com/npm-supply-chain-attack/",
+        "https://posthog.com/blog/nov-24-shai-hulud-attack-post-mortem",
+        "https://www.microsoft.com/en-us/security/blog/2025/12/09/shai-hulud-2-0-guidance-for-detecting-investigating-and-defending-against-the-supply-chain-attack/",
+        "https://securitylabs.datadoghq.com/articles/shai-hulud-2.0-npm-worm/",
+        "https://www.elastic.co/blog/shai-hulud-worm-2-0-updated-response"
+      ]
+    },
+    {
+      "id": "axios-dprk-mar-2026",
+      "name": "Axios DPRK supply-chain hijack",
+      "date": "2026-03-31",
+      "attribution": "DPRK-nexus",
+      "attack_windows_utc": [
+        {"start": "2026-03-31T00:00:00Z", "end": "2026-03-31T23:59:59Z"}
+      ],
+      "compromised_scopes": [],
+      "compromised_packages": [
+        "axios",
+        "plain-crypto-js"
+      ],
+      "compromised_pypi": [],
+      "payload_files": [],
+      "payload_hashes_sha256": {},
+      "string_iocs": [
+        "sfrclak.com",
+        "plain-crypto-js"
+      ],
+      "optional_dependency_iocs": [],
+      "persistence": {
+        "windows": [
+          "%PROGRAMDATA%\\system.bat",
+          "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\MicrosoftUpdate"
+        ],
+        "shared": []
+      },
+      "notes": "Malicious axios versions injected hidden dep plain-crypto-js@4.2.1 with postinstall RAT dropper. C2 sfrclak.com:8000.",
+      "references": [
+        "https://github.com/PierrunoYT/axios-scanner",
+        "https://github.com/theNetworkChuck/axios-attack-guide",
+        "https://cloud.google.com/blog/topics/threat-intelligence/north-korea-threat-actor-targets-axios-npm-package",
+        "https://socradar.io/blog/axios-npm-supply-chain-attack-2026-ciso-guide/",
+        "https://unit42.paloaltonetworks.com/monitoring-npm-supply-chain-attacks/"
+      ]
+    }
+  ]
+}
