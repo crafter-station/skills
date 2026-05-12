@@ -53,6 +53,14 @@
       "author": "Crafter Station",
       "category": "design",
       "keywords": ["branding", "design", "og-images", "favicon", "social-media", "assets", "web-design", "marketing", "seo"]
+    },
+    {
+      "name": "obsidian-plugin-release",
+      "description": "Release a new version of an Obsidian community plugin without forgetting steps. Bumps version atomically across manifest.json + package.json + versions.json, builds, lints, commits, signs an annotated tag, and lets a GitHub Actions workflow publish the release with build-provenance attestation (SLSA in-toto). Idempotent and dry-run-safe. Includes scaffold for the release workflow and an eslint config that passes the new Obsidian Community automated review.",
+      "path": "obsidian-plugin-release",
+      "author": "Railly Hugo",
+      "category": "developer-tools",
+      "keywords": ["obsidian", "plugin", "release", "ci", "github-actions", "attestation", "slsa", "provenance", "community-plugins", "automation"]
     }
   ]
 }
