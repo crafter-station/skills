@@ -252,10 +252,18 @@ phase_b() {
         # If we have a hash for this filename, verify.
         local expected_hash
         expected_hash="$(jq -r ".campaigns[$i].payload_hashes_sha256.\"$fname\" // empty" "$IOCS_FILE")"
-        if [ -n "$expected_hash" ] && command -v shasum >/dev/null 2>&1; then
+        # Prefer GNU `sha256sum` (Linux default), fall back to `shasum -a 256` (macOS / Perl).
+        # Either way we extract the first whitespace-delimited token.
+        local hasher=""
+        if command -v sha256sum >/dev/null 2>&1; then
+          hasher="sha256sum"
+        elif command -v shasum >/dev/null 2>&1; then
+          hasher="shasum -a 256"
+        fi
+        if [ -n "$expected_hash" ] && [ -n "$hasher" ]; then
           while IFS= read -r f; do
             local got
-            got="$(shasum -a 256 "$f" 2>/dev/null | awk '{print $1}')"
+            got="$($hasher "$f" 2>/dev/null | awk '{print $1}')"
             if [ "$got" = "$expected_hash" ]; then
               row "$cname" "payload SHA256 match on $f" "FAIL" "$got"
               PHASE_B_FAILS=$((PHASE_B_FAILS+1))
