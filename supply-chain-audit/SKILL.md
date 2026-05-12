@@ -26,7 +26,7 @@ Every check is `find` / `grep` / `jq` / `stat` / `shasum`. The scanner never wri
 1. Read `iocs.json` to understand the current campaign list. If `--list` is requested, summarize the campaigns and stop.
 2. Determine project roots. Default: `$HOME`, but prefer narrower paths the user mentions (e.g. `~/Clerk`, `~/Programming`). Ask once if ambiguous and >50GB of code is in scope.
 3. Run `bash scripts/scan.sh [root1 root2 ...]`. The script emits a structured markdown report to stdout. Capture it.
-4. Parse the report. Determine overall verdict by counting failed IOC rows. Any FAIL anywhere → POTENTIALLY COMPROMISED. Otherwise CLEAN.
+4. Parse the report. Verdict logic: **only FAIL rows count toward POTENTIALLY COMPROMISED**. A FAIL means an unambiguous compromise signal — persistence artifact present, payload filename found, payload SHA256 matched, string IOC in lockfile, optionalDependencies git-ref smuggle, or Phase C time-window hit. Inventory rows ("you have a copy of `@tanstack/query-core` in your tree") are emitted as **REVIEW** and do *not* flip the verdict — having `@tanstack/*` installed in February 2026 says nothing about whether you got the May 2026 malicious versions. Phase C answers that. If FAIL_COUNT > 0 → POTENTIALLY COMPROMISED. Otherwise CLEAN, even if REVIEW > 0.
 5. Present the report to the user following the output format below.
 
 ## Output format
@@ -41,19 +41,22 @@ ALWAYS use this exact structure:
 ## IOC checklist
 | Campaign | Check | Result |
 |----------|-------|--------|
-| ...      | ...   | PASS/FAIL/skipped |
+| ...      | ...   | PASS/FAIL/REVIEW/skipped |
 
-## At-risk packages
+## Inventory — packages from compromised scopes (REVIEW, not FAIL)
 (only if Phase B found compromised scopes installed; list `name@version`, install date, path)
 
 ## Phase summary
-- Phase A (persistence): N checks, M failed
-- Phase B (code & cache): N checks, M failed
-- Phase C (time window): N campaigns, M with hits
+- Phase A (persistence): N fail(s)
+- Phase B (code & cache): N fail(s), M review(s)
+- Phase C (time window): N fail(s) — authoritative exposure signal
+- Total: P PASS / F FAIL / R REVIEW / S skipped
 
 ## Next steps
 <remediation block — see references/remediation.md>
 ```
+
+When summarizing REVIEW rows to the user, cross-check the install timestamp against the campaign's attack window from `iocs.json`. If install date is outside the window AND Phase C is clean → these packages are safe, mention briefly. If install date overlaps the window → escalate the row to "needs manual version check against the disclosed malicious version list."
 
 If verdict is **POTENTIALLY COMPROMISED**, the Next steps block MUST lead with:
 

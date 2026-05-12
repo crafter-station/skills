@@ -46,9 +46,16 @@ if [ "$ioc_epoch" -gt 0 ]; then
 fi
 
 # Counters for verdict.
+# Only FAIL rows count toward POTENTIALLY COMPROMISED — those are the unambiguous
+# signals (persistence artifact present, payload file found, malicious hash match,
+# string IOC in lockfile, optionalDeps git-ref smuggle, Phase C time-window hit).
+# REVIEW rows are inventory (you have a copy of a package whose scope was attacked,
+# but install timestamp is outside the attack window) — they need a human glance,
+# not an alarm.
 FAIL_COUNT=0
 PASS_COUNT=0
 SKIP_COUNT=0
+REVIEW_COUNT=0
 
 # Buffers for sections.
 CHECKLIST=""
@@ -56,6 +63,7 @@ AT_RISK=""
 PHASE_A_FAILS=0
 PHASE_B_FAILS=0
 PHASE_C_FAILS=0
+PHASE_B_REVIEWS=0
 
 row() {
   # row campaign check result [evidence]
@@ -63,6 +71,7 @@ row() {
   case "$result" in
     PASS) PASS_COUNT=$((PASS_COUNT+1)) ;;
     FAIL) FAIL_COUNT=$((FAIL_COUNT+1)) ;;
+    REVIEW) REVIEW_COUNT=$((REVIEW_COUNT+1)) ;;
     skipped) SKIP_COUNT=$((SKIP_COUNT+1)) ;;
   esac
   local cell_evidence=""
@@ -196,8 +205,9 @@ phase_b() {
               done <<< "$opt_iocs"
             done
           done <<< "$hits"
-          row "$cname" "scope $scope installed (review versions vs disclosure)" "FAIL" "$(echo "$hits" | wc -l | tr -d ' ') location(s)"
-          PHASE_B_FAILS=$((PHASE_B_FAILS+1))
+          # Inventory row — REVIEW, not FAIL. Phase C catches actual exposure.
+          row "$cname" "scope $scope installed (inventory — cross-check Phase C)" "REVIEW" "$(echo "$hits" | wc -l | tr -d ' ') location(s)"
+          PHASE_B_REVIEWS=$((PHASE_B_REVIEWS+1))
         else
           row "$cname" "scope $scope not installed" "PASS" ""
         fi
@@ -221,8 +231,9 @@ phase_b() {
           AT_RISK="${AT_RISK}- \`${p}@${ver}\` (installed ${install_time}) — \`${pkg}\`
 "
         done <<< "$hits"
-        row "$cname" "package $p installed (review versions vs disclosure)" "FAIL" ""
-        PHASE_B_FAILS=$((PHASE_B_FAILS+1))
+        # Inventory row — REVIEW, not FAIL.
+        row "$cname" "package $p installed (inventory — cross-check Phase C)" "REVIEW" ""
+        PHASE_B_REVIEWS=$((PHASE_B_REVIEWS+1))
       else
         row "$cname" "package $p not installed" "PASS" ""
       fi
@@ -353,13 +364,15 @@ ${STALENESS_WARNING}
 |----------|-------|--------|
 ${CHECKLIST}
 
-## At-risk packages
+## Inventory — packages from compromised scopes (REVIEW, not FAIL)
+These are installed copies of packages whose scope was attacked at some point. They become a real problem only if Phase C shows file writes during the attack window, or if the installed version exactly matches a disclosed malicious version. Cross-check before alarming.
+
 $([ -n "$AT_RISK" ] && echo "$AT_RISK" || echo "_None installed under scanned roots._")
 
 ## Phase summary
 - Phase A (persistence): ${PHASE_A_FAILS} fail(s)
-- Phase B (code & cache): ${PHASE_B_FAILS} fail(s)
-- Phase C (time window): ${PHASE_C_FAILS} fail(s)
-- Total: ${PASS_COUNT} PASS / ${FAIL_COUNT} FAIL / ${SKIP_COUNT} skipped
+- Phase B (code & cache): ${PHASE_B_FAILS} fail(s), ${PHASE_B_REVIEWS} review(s)
+- Phase C (time window): ${PHASE_C_FAILS} fail(s) — authoritative exposure signal
+- Total: ${PASS_COUNT} PASS / ${FAIL_COUNT} FAIL / ${REVIEW_COUNT} REVIEW / ${SKIP_COUNT} skipped
 
 EOF
