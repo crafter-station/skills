@@ -45,6 +45,14 @@
       "author": "Railly Hugo",
       "category": "security",
       "keywords": ["security", "supply-chain", "npm", "pypi", "shai-hulud", "mini-shai-hulud", "teampcp", "axios", "tanstack", "iocs", "malware-scan", "audit", "forensics"]
+    },
+    {
+      "name": "generate-brand-assets",
+      "description": "Generate OG images and favicon based on project branding. Creates correctly sized social media preview images (1200×630px) for Twitter, LinkedIn, and Facebook, plus favicon formats (16-512px). Supports brand color palettes, gradients, text customization, and multiple formats (PNG, WebP, ICO). Outputs ready-to-integrate assets for web and mobile apps.",
+      "path": "generate-brand-assets",
+      "author": "Crafter Station",
+      "category": "design",
+      "keywords": ["branding", "design", "og-images", "favicon", "social-media", "assets", "web-design", "marketing", "seo"]
     }
   ]
 }
