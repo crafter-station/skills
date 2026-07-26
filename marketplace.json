@@ -31,14 +31,6 @@
       "keywords": ["skills", "analytics", "usage", "context-budget", "prune", "sparklines", "claude-code", "opencode"]
     },
     {
-      "name": "spoti-cli",
-      "description": "Create Spotify playlists using spoti-cli CLI. Interprets mood, context, or vault state into search queries and recommendations. Supports vault-aware playlist generation by reading Obsidian daily logs.",
-      "path": "spoti-cli",
-      "author": "Railly Hugo",
-      "category": "spoti-cli",
-      "keywords": ["spotify", "playlist", "music", "cli", "ai-agents", "mood", "obsidian", "vault"]
-    },
-    {
       "name": "supply-chain-audit",
       "description": "Read-only audit of a developer machine for npm/PyPI supply-chain compromise. Scans for known IOCs from Shai-Hulud 2.0 (Nov 2025), Mini Shai-Hulud / TeamPCP (May 2026), Axios DPRK (Mar 2026), and any future campaigns added to the IOC pack. Produces a PASS/FAIL verdict, IOC checklist, at-risk package list, and 48h bake-period remediation. Never modifies files.",
       "path": "supply-chain-audit",
