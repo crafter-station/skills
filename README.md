@@ -14,9 +14,6 @@ npx skills add crafter-station/skills --skill skill-gen -g
 # Install skillkit
 npx skills add crafter-station/skills --skill skillkit -g
 
-# Install spoti-cli
-npx skills add crafter-station/skills --skill spoti-cli -g
-
 # Install supply-chain-audit
 npx skills add crafter-station/skills --skill supply-chain-audit -g
 
@@ -44,12 +41,6 @@ Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.co
 | [skill-gen](./meta/skill-gen/) | Create effective agent skills with guided workflows, validation, and packaging tools |
 | [skillkit](./meta/skillkit/) | Local-first analytics for AI agent skills. Tracks usage, measures context budget, prunes unused skills |
 
-### Music
-
-| Skill | What it does |
-|-------|--------------|
-| [spoti-cli](./spoti-cli/) | Create Spotify playlists from natural language, mood, or Obsidian vault context. Wraps the [spoti-cli](https://spoti-cli.crafter.run) CLI |
-
 ### Security
 
 | Skill | What it does |
@@ -67,6 +58,17 @@ Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.co
 | Skill | What it does |
 |-------|--------------|
 | [obsidian-plugin-release](./obsidian-plugin-release/) | Atomic release flow for Obsidian community plugins. Bumps version across manifest.json + package.json + versions.json, builds, lints, signs an annotated tag, and triggers a GitHub Actions workflow that publishes the release with build-provenance attestation (SLSA in-toto). Passes the new Obsidian Community automated review. |
+
+## Skills that ship from their own repo
+
+A skill that documents one tool belongs with that tool, so it cannot drift from the commands it describes. Those live in the tool's repository:
+
+| Skill | Install |
+|-------|---------|
+| [spoti-cli](https://github.com/crafter-station/spoti-cli/tree/main/skills/spoti-cli) | `npx skills add crafter-station/spoti-cli` |
+| [sismo-cli](https://github.com/crafter-station/sismo-abierto/tree/main/skills/sismo-cli) | `npx skills add crafter-station/sismo-abierto` |
+
+This repo keeps the skills that are not tied to a single codebase.
 
 ## Contributing
 
