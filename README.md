@@ -22,6 +22,9 @@ npx skills add crafter-station/skills --skill supply-chain-audit -g
 
 # Install generate-brand-assets
 npx skills add crafter-station/skills --skill generate-brand-assets -g
+
+# Install obsidian-plugin-release
+npx skills add crafter-station/skills --skill obsidian-plugin-release -g
 ```
 
 Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.com/vercel-labs/add-skill#available-agents).
@@ -58,6 +61,12 @@ Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.co
 | Skill | What it does |
 |-------|--------------|
 | [generate-brand-assets](./generate-brand-assets/) | Generate OG images and favicon based on project branding. Creates social media preview images (1200×630px) and favicon formats, with support for brand colors, gradients, and multiple formats (PNG, WebP, ICO) |
+
+### Developer Tools
+
+| Skill | What it does |
+|-------|--------------|
+| [obsidian-plugin-release](./obsidian-plugin-release/) | Atomic release flow for Obsidian community plugins. Bumps version across manifest.json + package.json + versions.json, builds, lints, signs an annotated tag, and triggers a GitHub Actions workflow that publishes the release with build-provenance attestation (SLSA in-toto). Passes the new Obsidian Community automated review. |
 
 ## Contributing
 
