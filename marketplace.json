@@ -23,14 +23,6 @@
       "keywords": ["skills", "meta", "skill-generation", "firecrawl", "docs-extraction", "automation", "ai-agents"]
     },
     {
-      "name": "skillkit",
-      "description": "Local-first analytics for AI agent skills. Tracks usage with sparklines, measures context budget, and prunes unused skills. Supports Claude Code and OpenCode.",
-      "path": "meta/skillkit",
-      "author": "Railly Hugo",
-      "category": "meta",
-      "keywords": ["skills", "analytics", "usage", "context-budget", "prune", "sparklines", "claude-code", "opencode"]
-    },
-    {
       "name": "supply-chain-audit",
       "description": "Read-only audit of a developer machine for npm/PyPI supply-chain compromise. Scans for known IOCs from Shai-Hulud 2.0 (Nov 2025), Mini Shai-Hulud / TeamPCP (May 2026), Axios DPRK (Mar 2026), and any future campaigns added to the IOC pack. Produces a PASS/FAIL verdict, IOC checklist, at-risk package list, and 48h bake-period remediation. Never modifies files.",
       "path": "supply-chain-audit",
