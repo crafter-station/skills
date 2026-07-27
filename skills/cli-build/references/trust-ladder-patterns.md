@@ -14,7 +14,7 @@ A trust ladder is a tax. It earns its keep only when commands have real conseque
 
 ## Shape 1: tiered ladder with cryptographic intent tokens
 
-The heaviest, for the highest stakes. Observed in a brokerage CLI where a wrong command loses real money.
+The heaviest, for when a wrong command loses real money. Observed in a brokerage CLI.
 
 | Tier | Friction |
 |---|---|
@@ -47,7 +47,7 @@ Simpler, and better for domains where the risk is uniform rather than tiered.
 
 An environment variable marks the process as agent-driven. In that mode, mutating commands require explicit flags that a human running interactively would never need to type, plus rate limiting. There are no tiers; the ladder is one step, and the step is "prove you meant this".
 
-**When to use it:** when most write operations carry similar risk, and the useful distinction is human-versus-agent rather than low-versus-high stakes. Also when a tiered ladder would be theater: three tiers over four commands is bureaucracy.
+**When to use it:** when most write operations carry similar risk, and the useful distinction is human-versus-agent rather than cheap-versus-costly mistakes. Also when a tiered ladder would be theater: three tiers over four commands is bureaucracy.
 
 ---
 

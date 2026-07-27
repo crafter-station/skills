@@ -52,7 +52,7 @@ The advice "prefer NDJSON over JSON arrays for streaming" is real but frequently
 So state the actual rule:
 
 - **One result:** a single JSON object. Simple, universally parseable.
-- **A bounded collection you already have in memory:** an array is fine. `jq` handles it, agents handle it, and pretending otherwise adds ceremony.
+- **A bounded collection you already have in memory:** an array is fine. `jq` handles it, agents handle it, and pretending otherwise adds friction for nothing.
 - **A stream, an unbounded set, or incremental processing:** NDJSON, one object per line. This is where it genuinely wins, because the consumer acts on line one without waiting for the last.
 
 Do not claim NDJSON in documentation unless you emit it. An agent told to expect line-delimited objects that receives a pretty-printed array will fail on the first parse.
