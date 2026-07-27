@@ -1,6 +1,6 @@
 ---
 name: cli-build
-version: 0.4.0
+version: 0.5.0
 description: "Design and build a CLI that an AI agent can operate safely and a human can supervise. Use when the user wants to build a CLI, wrap an API in a command-line tool, add --json or --dry-run to an existing CLI, design a trust ladder or approval gate for risky commands, wrap an async API so agents do not write their own poll loop, or decide how to distribute a CLI (npm, native binary, source). Follows a surface-recon report when one exists."
 ---
 
@@ -21,7 +21,7 @@ If a `surface-recon` report exists, start from it. If not and the target is a se
 - A `schema` command, carrying a version field, so agents introspect operations at runtime instead of parsing `--help`. Present in only 3 of 14 corpus CLIs, all three among the most mature: simultaneously the highest-value agent-first convention and the least adopted.
 - Exit codes that mean something. Zero is success; distinguish user error from system failure.
 - Composable stdout. Data on stdout, diagnostics on stderr, always.
-- A banner on bare invoke and `--help`: name, version, tagline. It goes **to stderr**, so a pipe stays clean, and it disappears when there is no TTY or `NO_COLOR` is set. The `banner` block covers this, and the stderr detail is the whole reason to take the block rather than write a `console.log`.
+- A banner on bare invoke and `--help`: name, version, tagline. It goes **to stderr**, so a pipe stays clean, and it degrades to two plain lines when there is no TTY or `NO_COLOR` is set rather than vanishing. The `banner` block covers this, and the stderr detail is the whole reason to take the block rather than write a `console.log`.
 
 **When the domain has real consequences** (money, irreversible writes, third-party side effects, personal data):
 
@@ -132,6 +132,8 @@ mycli --help
 
 Running it through `bun run src/cli.ts` verifies a file. Running `mycli` verifies the thing you ship: the bin entry, the shebang, the resolved dependencies, the banner. Three of those are invisible from a source-file invocation, and a broken `bin` path is the kind of defect that reaches a user's first install.
 
+**Verifying a new feature probes the old ones that share its stream.** The check for one feature is a check on everything else writing to the same place. On the first real run, confirming a fresh banner kept stdout clean turned up 810 bytes there, and none of it was the banner: a bare invoke had been writing human help text to stdout with a nonzero exit since the previous round. An agent piping the command with no arguments got prose in its data stream. Nobody had looked because bare invoke is not a case people test.
+
 **Definition of done is observed behavior.** Run the command. Show the output. "The code looks right" is not verification.
 
 **Fixtures must cross a boundary the code orders or filters by.** A date rollover, a month rollover, an empty set. A fixture set that never crosses one tests the shape and not the logic: in the first real run of this skill, 54 green tests all shared a single day of data, and underneath them a command sorted by a formatted `DD/MM/YYYY` string and opened with next month's results.
@@ -144,7 +146,9 @@ Then record the build in [cases/](cases/), and read [portfolio-shape.md](cases/p
 
 **Name your own code, not other people's.** A case about a CLI you wrote can be specific about what broke. A finding about someone else's package drops the subject and keeps the defect, and a third-party target you reconned is described by class, never by identity. The full boundary is in [cases/README.md](cases/README.md).
 
-**Done when:** the CLI has been linked globally and run by its own name, its real output read, `skills/<name>/SKILL.md` exists, and a case file exists with `friction.md` folded into it. Reporting done from code that looks right is the failure this criterion exists to catch.
+**Done when:** the CLI has been linked globally and run by its own name, its real output read, `skills/<name>/SKILL.md` exists with valid frontmatter, and a case file exists with `friction.md` folded into it.
+
+Note that `npx skills add <owner>/<repo>` cannot be checked until the remote exists, and its failure for an unpublished repo is indistinguishable from a malformed SKILL.md unless you read the message. The file being valid is a local check; being installable is a post-push one. Reporting done from code that looks right is the failure this criterion exists to catch.
 
 This is the part everyone skips, and skipping it is why the same lessons get rediscovered. The corpus behind this skill exists only because someone eventually wrote it down; before that, four CLIs had independently reinvented the same audit-log design.
 

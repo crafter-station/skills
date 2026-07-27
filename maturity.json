@@ -59,8 +59,8 @@
     "cli-build": {
       "category": "build",
       "maturity": "candidate",
-      "version": "0.4.0",
-      "summary": "Distilled from 14 CLIs with real code, four of them published, then run end to end on its first real build. That run caught four defects that survived a clean typecheck and 54 green tests, and its friction log corrected six things in the skill.",
+      "version": "0.5.0",
+      "summary": "Distilled from 14 CLIs with real code, four of them published, then run end to end twice on the same build. The two runs caught five defects that survived a clean typecheck and 59 green tests, and their friction logs corrected nine things in the skill plus one bug upstream in cligentic.",
       "since": "2026-07"
     }
   }
