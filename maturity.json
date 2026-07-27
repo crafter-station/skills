@@ -15,20 +15,20 @@
     },
     "obsidian-plugin-release": {
       "category": "publish",
-      "maturity": "candidate",
-      "summary": "Extracted from releasing a real Obsidian community plugin, including the constraints of the automated community review. Few releases through it so far.",
+      "maturity": "stable",
+      "summary": "Used to ship real releases of an Obsidian community plugin, including passing the automated community review. The atomic version bump and the provenance attestation both verified on live releases.",
       "since": "2026-07"
     },
     "generate-brand-assets": {
       "category": "build",
-      "maturity": "candidate",
-      "summary": "Generates OG images and favicons from a project's branding. Mileage not yet recorded.",
+      "maturity": "stable",
+      "summary": "Used to generate the OG images and favicons on shipped Crafter Station projects. Outputs land ready to integrate at the sizes the social platforms actually want.",
       "since": "2026-07"
     },
     "intent-layer": {
       "category": "context",
-      "maturity": "candidate",
-      "summary": "Sets up a hierarchical AGENTS.md structure, built on The Intent Layer method by Tyler Brandt. Mileage not yet recorded.",
+      "maturity": "stable",
+      "summary": "Used to set up the AGENTS.md hierarchy on real repositories, where it measurably improved how agents navigate them. Built on The Intent Layer method by Tyler Brandt.",
       "since": "2026-04"
     },
     "skill-gen": {

@@ -11,17 +11,10 @@
       "description": "Used on real work. Recommended.",
       "source": "./",
       "skills": [
-        "./skills/supply-chain-audit"
-      ]
-    },
-    {
-      "name": "candidates",
-      "description": "Works, with thin evidence so far.",
-      "source": "./",
-      "skills": [
         "./skills/generate-brand-assets",
         "./skills/intent-layer",
-        "./skills/obsidian-plugin-release"
+        "./skills/obsidian-plugin-release",
+        "./skills/supply-chain-audit"
       ]
     },
     {
