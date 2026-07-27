@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/marketplace.schema.json",
   "name": "crafter-station-skills",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Agent skills extracted from real work. Each one shipped something first.",
   "owner": "crafter-station",
   "repository": "https://github.com/crafter-station/skills",
@@ -15,6 +15,15 @@
         "./skills/intent-layer",
         "./skills/obsidian-plugin-release",
         "./skills/supply-chain-audit"
+      ]
+    },
+    {
+      "name": "candidates",
+      "description": "Works, with thin evidence so far.",
+      "source": "./",
+      "skills": [
+        "./skills/cli-build",
+        "./skills/surface-recon"
       ]
     },
     {

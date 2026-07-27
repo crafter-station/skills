@@ -6,36 +6,62 @@
     "experimental": "Coherent method and trigger boundary, no real-work use yet.",
     "deprecated": "Kept for provenance. Not recommended."
   },
+  "versioning": {
+    "policy": "Each skill carries a version in its SKILL.md frontmatter. The number tracks the skill as a document, not the tool it wraps.",
+    "major": "The method changed: a phase added or removed, a reordered flow, a renamed reference. Anyone following the old version gets different results.",
+    "minor": "Material added or a claim corrected without changing the flow.",
+    "patch": "Wording, links, typos.",
+    "reaching-1.0.0": "A skill reaches 1.0.0 when it is stable: run on real work, with the evidence recorded. Candidates stay on 0.x, which is the honest signal that the contract can still move."
+  },
   "skills": {
     "supply-chain-audit": {
       "category": "audit",
       "maturity": "stable",
+      "version": "1.0.0",
       "summary": "Written and run during the 2025-2026 npm compromise wave, against real machines under a live disclosure. Ships a versioned IOC pack covering Shai-Hulud 2.0, Mini Shai-Hulud / TeamPCP, and Axios DPRK, and finds the artifacts it claims to.",
       "since": "2026-05"
     },
     "obsidian-plugin-release": {
       "category": "publish",
       "maturity": "stable",
+      "version": "1.0.0",
       "summary": "Used to ship real releases of an Obsidian community plugin, including passing the automated community review. The atomic version bump and the provenance attestation both verified on live releases.",
       "since": "2026-07"
     },
     "generate-brand-assets": {
       "category": "build",
       "maturity": "stable",
+      "version": "1.0.0",
       "summary": "Used to generate the OG images and favicons on shipped Crafter Station projects. Outputs land ready to integrate at the sizes the social platforms actually want.",
       "since": "2026-07"
     },
     "intent-layer": {
       "category": "context",
       "maturity": "stable",
+      "version": "1.0.0",
       "summary": "Used to set up the AGENTS.md hierarchy on real repositories, where it measurably improved how agents navigate them. Built on The Intent Layer method by Tyler Brandt.",
       "since": "2026-04"
     },
     "skill-gen": {
       "category": "build",
       "maturity": "deprecated",
+      "version": "0.9.0",
       "summary": "Generated skills from documentation with Firecrawl. In practice the output needed enough rewriting that authoring the SKILL.md by hand was faster. Kept installable for provenance, no longer recommended.",
       "since": "2026-04"
+    },
+    "surface-recon": {
+      "category": "build",
+      "maturity": "candidate",
+      "version": "0.1.0",
+      "summary": "Distilled from 21 recon reports across public APIs, private GraphQL behind signed requests, login-walled portals, BaaS bundles, file formats, and desktop binaries. The seven-terrain classification and its gates come from that corpus, but the skill itself has not yet driven a recon end to end.",
+      "since": "2026-07"
+    },
+    "cli-build": {
+      "category": "build",
+      "maturity": "candidate",
+      "version": "0.1.0",
+      "summary": "Distilled from 14 CLIs with real code, four of them published. Its conventions are the ones that appeared in CLIs sharing no code, and its anti-patterns were verified against the source rather than remembered. Not yet used to build a CLI from scratch.",
+      "since": "2026-07"
     }
   }
 }
