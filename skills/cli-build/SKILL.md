@@ -31,7 +31,7 @@ If a `surface-recon` report exists, start from it. If not and the target is a se
 
 **When the API is asynchronous:** `--wait` on every submitting command, backed by a job ledger that survives a killed poll. Handing the poll loop to the caller makes the agent write backoff logic it will get subtly wrong. See [compounding-surface.md](references/compounding-surface.md).
 
-**Match ceremony to stakes.** A read-only CLI over a public dataset earns `--json` and a `schema` command, and stops there. Intent tokens are for domains where a wrong call costs money. Assess the domain, then choose. See [trust-ladder-patterns.md](references/trust-ladder-patterns.md).
+**Size the friction to the damage.** A read-only CLI over a public dataset earns `--json` and a `schema` command, and stops there: nobody loses anything by running the query twice. Intent tokens are for a wrong call that costs money. Ask what a wrong call would cost, then choose. See [trust-ladder-patterns.md](references/trust-ladder-patterns.md).
 
 ## Phase 1: decide the distribution target first
 
@@ -86,7 +86,7 @@ curl -o src/lib/atomic-write.ts https://cligentic.railly.dev/r/atomic-write.ts
 
 If you are not in a TypeScript project, or the install path does not fit, read the block source and reimplement the pattern. The patterns are the point; the files are a shortcut.
 
-## Phase 4: safety, proportional to stakes
+## Phase 4: safety, sized to the damage
 
 Read [trust-ladder-patterns.md](references/trust-ladder-patterns.md) and pick a shape. Three materially different ones exist in real code, and the right choice depends on the domain rather than on fashion.
 
