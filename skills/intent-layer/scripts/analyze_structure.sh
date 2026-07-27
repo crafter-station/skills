@@ -53,4 +53,4 @@ for dir in src lib app packages services api; do
 done
 
 echo ""
-echo "Run estimate_tokens.py on specific directories to determine if they need their own node."
+echo "Run estimate_tokens.sh on specific directories to determine if they need their own node."
