@@ -101,6 +101,12 @@ Where the schema comes from: bundled JSON schema files, a bundled OpenAPI docume
 
 Agents pay for every token of output. When a command returns a large object and the caller wants one field, a `--fields` flag saves real context. One corpus CLI added this specifically so agents could get a transcript without the metadata around it.
 
+**Two hazards, both observed on the first real build with this skill.**
+
+Apply the filter **before** the machine-mode branch, not inside the human-table one. Applied in the wrong branch it works for humans and is silently dropped for agents, which is exactly inverted.
+
+And decide which key space it validates against. A table renderer usually relabels columns, so `--fields` faces two different key spaces the moment both modes exist: the JSON shape (`dateTime`) and the table headers (`hora`). Either validate against the mode in play, or keep the two key spaces identical. Silence on this produced an unknown field name returning empty objects with a success envelope.
+
 ## Third-party text is untrusted
 
 Any free-text string that came from an external API; an error message, a description, a note field: can carry instructions aimed at the agent that reads your output.

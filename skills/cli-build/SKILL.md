@@ -1,6 +1,6 @@
 ---
 name: cli-build
-version: 0.2.0
+version: 0.3.0
 description: "Design and build a CLI that an AI agent can operate safely and a human can supervise. Use when the user wants to build a CLI, wrap an API in a command-line tool, add --json or --dry-run to an existing CLI, design a trust ladder or approval gate for risky commands, wrap an async API so agents do not write their own poll loop, or decide how to distribute a CLI (npm, native binary, source). Follows a surface-recon report when one exists."
 ---
 
@@ -121,13 +121,19 @@ Two more from the same corpus, both live in published packages:
 
 ## Phase 6: verify, then write it down
 
-**Definition of done is observed behavior.** Run the command. Show the output. "The code looks right" is not verification. For anything touching a real provider, a smoke script against the live target, separate from unit tests, is what proves the integration.
+**Definition of done is observed behavior.** Run the command. Show the output. "The code looks right" is not verification.
+
+**Fixtures must cross a boundary the code orders or filters by.** A date rollover, a month rollover, an empty set. A fixture set that never crosses one tests the shape and not the logic: in the first real run of this skill, 54 green tests all shared a single day of data, and underneath them a command sorted by a formatted `DD/MM/YYYY` string and opened with next month's results.
+
+**For any function whose failure mode is bad input, assert on the bad input.** A test that only passes valid arguments cannot distinguish a validating implementation from a silently-dropping one. The same run shipped a `--fields` that returned eleven empty objects under `ok: true` with exit 0 for an unknown field name, and the test could not fail because it only ever passed valid names. A successful envelope containing nothing is the worst output an agent can receive. For anything touching a real provider, a smoke script against the live target, separate from unit tests, is what proves the integration.
 
 Then record the build in [cases/](cases/), and read [portfolio-shape.md](cases/portfolio-shape.md) first if you want the aggregate picture: what a mature CLI here actually has, and the gap between features present and features wired. One file per CLI: target, terrain, distribution choice, which blocks were adopted or rejected and why, what broke, what you would do differently. Distill repeated findings into [conventions.md](cases/conventions.md).
 
+**Ship the agent's manual with the CLI.** A CLI whose primary user is an agent needs a `skills/<name>/SKILL.md` in its own repo: the commands, the JSON envelope, the flags that matter, and the workflows worth composing. Without it every agent rediscovers the surface through `--help`, which is the cost this whole skill exists to remove. It lives in the CLI's repo rather than a skills catalog, so it cannot drift from the commands it describes, and it makes the CLI installable with `npx skills add <owner>/<repo>`.
+
 **Name your own code, not other people's.** A case about a CLI you wrote can be specific about what broke. A finding about someone else's package drops the subject and keeps the defect, and a third-party target you reconned is described by class, never by identity. The full boundary is in [cases/README.md](cases/README.md).
 
-**Done when:** the command has been run and its real output read, and a case file exists with `friction.md` folded into it. Reporting done from code that looks right is the failure this criterion exists to catch.
+**Done when:** the command has been run and its real output read, `skills/<name>/SKILL.md` exists, and a case file exists with `friction.md` folded into it. Reporting done from code that looks right is the failure this criterion exists to catch.
 
 This is the part everyone skips, and skipping it is why the same lessons get rediscovered. The corpus behind this skill exists only because someone eventually wrote it down; before that, four CLIs had independently reinvented the same audit-log design.
 

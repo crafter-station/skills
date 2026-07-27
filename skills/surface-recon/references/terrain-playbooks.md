@@ -59,6 +59,8 @@ When GraphQL introspection is disabled (403 on `__schema`), the schema is still 
 
 **Then verify which of it matters.** A capture shows what the client sent, not what it depends on. Aborting an endpoint shows whether the app needs it; mocking a response with a field removed shows whether that field is load-bearing or decoration. This is the step a HAR-only recon skips, and it is the one that makes an endpoint table trustworthy. See [agent-browser-recon.md](agent-browser-recon.md).
 
+**Read the error body before diffing headers.** A replay that fails often names what is missing: on the first real run of this skill, a 500 returned `"Country undefined not implemented"`, which identified the one required header outright. Diffing your request against the HAR also works and is slower. Read what the server told you first.
+
 **Request signing:** if requests carry a signature header, the function that builds it is in the bundle. Find it, then **replay a signed request from outside the browser to prove you understood it.** In the corpus the signed message turned out to be `timestamp + query-with-spaces-stripped + platform_os + app_version`, a shape nobody would guess, and only a replay confirms it.
 
 **Session values that rotate:** some servers return a fresh session key on every response and expect the next request to use it. Miss one rotation and everything after fails. Check whether any response header changes between two identical calls. Three separate targets in the corpus did this.
