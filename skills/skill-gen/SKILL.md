@@ -1,10 +1,14 @@
 ---
 name: skill-gen
-description: Auto-generate Claude skills from documentation URLs using Firecrawl agent. Use when user wants to create a skill from docs, API references, or tool homepages. Asks up to 3 clarifying questions before deep extraction. Supports topic focus (e.g., "only auth endpoints") and outputs to local .claude/skills/ by default.
+description: "Deprecated. Auto-generate Claude skills from documentation URLs using Firecrawl agent. Use when user wants to create a skill from docs, API references, or tool homepages. Asks up to 3 clarifying questions before deep extraction. Supports topic focus (e.g., \"only auth endpoints\") and outputs to local .claude/skills/ by default. No longer recommended: the generated output needed enough rewriting that authoring the SKILL.md by hand was faster."
 license: Complete terms in LICENSE.txt
 ---
 
 # Skill Gen
+
+> **Deprecated, kept for provenance.** Generating a skill from documentation produced output that needed enough rewriting that writing the SKILL.md by hand turned out faster. The failure is not Firecrawl's extraction, it is that a good skill encodes judgment about when to use it and what goes wrong, and documentation does not contain that. Read a skill you trust and write yours directly.
+>
+> Still installable. See [Maturity](../../../README.md#maturity).
 
 This skill provides guidance for creating effective skills.
 

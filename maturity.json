@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "states": {
+    "stable": "Used on real work. Recommended.",
+    "candidate": "Works, with thin evidence so far.",
+    "experimental": "Coherent method and trigger boundary, no real-work use yet.",
+    "deprecated": "Kept for provenance. Not recommended."
+  },
+  "skills": {
+    "supply-chain-audit": {
+      "category": "audit",
+      "maturity": "stable",
+      "summary": "Written and run during the 2025-2026 npm compromise wave, against real machines under a live disclosure. Ships a versioned IOC pack covering Shai-Hulud 2.0, Mini Shai-Hulud / TeamPCP, and Axios DPRK, and finds the artifacts it claims to.",
+      "since": "2026-05"
+    },
+    "obsidian-plugin-release": {
+      "category": "publish",
+      "maturity": "candidate",
+      "summary": "Extracted from releasing a real Obsidian community plugin, including the constraints of the automated community review. Few releases through it so far.",
+      "since": "2026-07"
+    },
+    "generate-brand-assets": {
+      "category": "build",
+      "maturity": "candidate",
+      "summary": "Generates OG images and favicons from a project's branding. Mileage not yet recorded.",
+      "since": "2026-07"
+    },
+    "intent-layer": {
+      "category": "context",
+      "maturity": "candidate",
+      "summary": "Sets up a hierarchical AGENTS.md structure, built on The Intent Layer method by Tyler Brandt. Mileage not yet recorded.",
+      "since": "2026-04"
+    },
+    "skill-gen": {
+      "category": "build",
+      "maturity": "deprecated",
+      "summary": "Generated skills from documentation with Firecrawl. In practice the output needed enough rewriting that authoring the SKILL.md by hand was faster. Kept installable for provenance, no longer recommended.",
+      "since": "2026-04"
+    }
+  }
+}
