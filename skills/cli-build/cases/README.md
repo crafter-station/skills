@@ -69,7 +69,9 @@ Aggregate findings across many targets belong in [portfolio-shape.md](portfolio-
 
 **Record the rejections.** The most useful entry in a corpus case was a table of seven shared blocks *not* adopted, with reasons. It prevented the next person from "fixing" a deliberate divergence back into a conflict.
 
-**Write it when it is fresh.** A case written three months later is a reconstruction. The details that save time are the ones you forget first.
+**Write it when it is fresh.** A case written three months later is a reconstruction. The details that save time are the ones you forget first, so keep a running `friction.md` during the build and fold it in at the end.
+
+**Log what this skill got wrong.** A reference that was thin, a convention that did not fit the domain, a block whose rejection took an argument to justify. That is the input that corrects the skill, and it has already worked: seven claims inherited from an older version were false against the source and only surfaced because someone checked. A case that improves the method is worth more than one that only records a build.
 
 **Contradict the skill when the code contradicts it.** If a reference file says one thing and your build found another, the case says so. That contradiction is the input that keeps the references honest; and it is exactly how the seven stale claims in the predecessor skill were caught.
 

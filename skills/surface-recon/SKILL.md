@@ -1,6 +1,6 @@
 ---
 name: surface-recon
-version: 0.1.0
+version: 0.2.0
 description: "Map what a target exposes and produce a recon report an implementer can build from. Works on web services and APIs, login-walled portals, desktop apps and compiled binaries, file formats, and hardware or accelerators whose real constraints are undocumented. Use when the user says 'recon this', 'reverse engineer this', 'map this API', 'figure out their endpoints', 'what does this device actually support', 'I want to build a CLI/client for X', or pastes a URL and asks what it exposes. Also use before building any integration against something whose contract you have not verified."
 allowed-tools: Bash(agent-browser:*), Bash(npx agent-browser:*)
 ---
@@ -128,6 +128,8 @@ State the maintenance risk plainly. An undocumented endpoint has no contract and
 
 **Done when:** one of the three verdicts is stated, and a reader could act on it without re-deriving your judgment.
 
+**Then hand over the friction.** Where a playbook was thin, a command failed for a reason its help text did not predict, or a gate did or did not hold, that goes in `recon/friction.md` alongside the report. It is the only input that improves the playbooks, and it is written during the recon rather than reconstructed after. See [friction-log.md](references/friction-log.md).
+
 ## References
 
 - [terrain-playbooks.md](references/terrain-playbooks.md): per-terrain technique, with what worked on real targets
@@ -135,6 +137,7 @@ State the maintenance risk plainly. An undocumented endpoint has no contract and
 - [agent-browser-recon.md](references/agent-browser-recon.md): interception, client state, React trees, desktop apps, session persistence
 - [report-template.md](references/report-template.md): the report shape, with per-terrain variants
 - [gates.md](references/gates.md): when to stop, and what to check before claiming a finding
+- [friction-log.md](references/friction-log.md): capturing where the skill itself slowed you down
 
 ## Boundaries
 
