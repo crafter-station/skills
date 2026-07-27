@@ -8,7 +8,7 @@ The question is not which runtime you prefer. It is **who has to install somethi
 |---|---|---|---|
 | You, from source | Runtime shebang, no build | That runtime installed | Internal tools, personal automation |
 | JS-ecosystem developers | Build to Node, publish to npm | Node (they have it) | The default for anything public |
-| Anyone | Compile to a native binary | Nothing | Consumer CLIs, mixed audiences |
+| Anyone | Compile to a native binary | Nothing | Consumer CLIs, mixed audiences. **Blocked today if the CLI uses `fetch`**, see below |
 
 ## The evidence
 
@@ -94,6 +94,12 @@ Three tiers, all explicit:
 - **Tier 3, rejected:** fails the build with an error code, a code frame, and usually a rewrite hint. Nothing is silently miscompiled.
 
 **What this means in practice:** a single npm dependency that ships plain JavaScript can pull in the dynamic engine and add most of a megabyte. The coverage report names the site. If your dependency tree is heavy on prebuilt JS, either replace those dependencies or accept the dynamic tier.
+
+**The blocker to know before choosing this target.** As of 0.0.15 there is no lowering for `fetch`, `Response`, or `AbortController`. Measured on the first CLI built with this skill: 91 percent statically compilable, and the blocked remainder was exactly those three. Since the code was plain Node `fetch` per the rule above, no rewrite would have changed it.
+
+**So for any CLI that talks to an HTTP API, the native target is currently gated by toolchain maturity rather than by audience.** That is most of what this skill produces. Run `scriptc coverage` early enough that the answer informs the choice instead of arriving after it. The audience question stays the right frame for the other two targets.
+
+The cost of hitting this is low if you followed the Node-API rule: npm stays reachable without a rewrite, and the native target reopens with a compiler release.
 
 **Status:** early versions. Treat it as a target worth measuring rather than a default, and re-measure after dependency changes. The compiler is under active development and rejections that block you today may not tomorrow.
 

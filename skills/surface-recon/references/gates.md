@@ -20,6 +20,8 @@ Verify: the URL in your capture should be the one that serves the action you car
 
 **Did you drive the actual action?** Endpoints appear on interaction, not on page load. A HAR from a bare `open` shows you the shell.
 
+**An endpoint you assembled from bundle strings is not an endpoint.** A route built out of grepped constants is a guess, and a 404 page served under HTTP 200 will confirm it for you. On the first real run of this skill, four attempts were burned this way. Either the request appears in traffic you drove, or it goes under "Needs verification" with the interaction that would produce it. There is no third category.
+
 **Did you keep the evidence?** A finding whose HAR is gone cannot be re-verified. One corpus report claimed a recon technique had been used but the repository preserved no receipt, so the claim had to be re-derived from scratch. Save the HAR. Note the bundle hash if you read a bundle.
 
 ## Before writing a finding
