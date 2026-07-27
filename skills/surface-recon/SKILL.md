@@ -17,6 +17,8 @@ This skill investigates. It does not design a command surface or write code: tha
 
 Concretely: the endpoint table holds requests you observed. Everything else goes under "Needs verification", each with the step that would confirm it.
 
+**Open `recon/friction.md` before Phase 0 and append to it as you go.** Every time a playbook is thin, a command fails for a reason its help text did not predict, or a gate does or does not hold, that is one line written at the moment it happens. It ships with the report and it is the only input that improves this skill. See [friction-log.md](references/friction-log.md).
+
 ## The tool
 
 Observation happens through `agent-browser`, and that tool ships its own guides that stay version-matched with the binary. Load them rather than guessing commands from memory:
@@ -126,9 +128,9 @@ Close with a recommendation, not just data. One of:
 
 State the maintenance risk plainly. An undocumented endpoint has no contract and no deprecation notice; it can break on any deploy. If the plan depends on coordinate-clicking a captcha or on a minified signing function, say that it will break and roughly when.
 
-**Done when:** one of the three verdicts is stated, and a reader could act on it without re-deriving your judgment.
+**Done when:** one of the three verdicts is stated, a reader could act on it without re-deriving your judgment, and `recon/friction.md` is handed over with the report. An empty friction log is a valid outcome; a missing one means it was never opened.
 
-**Then hand over the friction.** Where a playbook was thin, a command failed for a reason its help text did not predict, or a gate did or did not hold, that goes in `recon/friction.md` alongside the report. It is the only input that improves the playbooks, and it is written during the recon rather than reconstructed after. See [friction-log.md](references/friction-log.md).
+**Hand over `recon/friction.md` with the report.** Whatever slowed you down goes to whoever maintains the skill, and terrain friction in particular is what corrects a playbook.
 
 ## References
 
