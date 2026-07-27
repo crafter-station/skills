@@ -1,5 +1,6 @@
 ---
 name: skill-gen
+version: 0.9.0
 description: "Deprecated. Auto-generate Claude skills from documentation URLs using Firecrawl agent. Use when user wants to create a skill from docs, API references, or tool homepages. Asks up to 3 clarifying questions before deep extraction. Supports topic focus (e.g., \"only auth endpoints\") and outputs to local .claude/skills/ by default. No longer recommended: the generated output needed enough rewriting that authoring the SKILL.md by hand was faster."
 license: Complete terms in LICENSE.txt
 ---

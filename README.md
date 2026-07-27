@@ -24,34 +24,36 @@ Grouped by what the skill does for you. The Status column is explained under [Ma
 
 Read-only. Produces a verdict, never modifies anything.
 
-| Skill | Status | What it does |
-|-------|--------|--------------|
-| [supply-chain-audit](./skills/supply-chain-audit/) | stable | Scans a developer machine for npm/PyPI supply-chain compromise (Shai-Hulud 2.0, Mini Shai-Hulud / TeamPCP, Axios DPRK). Versioned IOC pack, three-phase scan, PASS/FAIL verdict, and 48h bake-period remediation |
+| Skill | Version | Status | What it does |
+|-------|---------|--------|--------------|
+| [supply-chain-audit](./skills/supply-chain-audit/) | 1.0.0 | stable | Scans a developer machine for npm/PyPI supply-chain compromise (Shai-Hulud 2.0, Mini Shai-Hulud / TeamPCP, Axios DPRK). Versioned IOC pack, three-phase scan, PASS/FAIL verdict, and 48h bake-period remediation |
 
 ### Build
 
 Produces a new artifact from scratch.
 
-| Skill | Status | What it does |
-|-------|--------|--------------|
-| [generate-brand-assets](./skills/generate-brand-assets/) | stable | Generates OG images (1200x630) and favicon formats from a project's branding, with brand colors, gradients, PNG/WebP/ICO |
-| [skill-gen](./skills/skill-gen/) | deprecated | Generated skills from documentation. See [Maturity](#maturity) before installing |
+| Skill | Version | Status | What it does |
+|-------|---------|--------|--------------|
+| [generate-brand-assets](./skills/generate-brand-assets/) | 1.0.0 | stable | Generates OG images (1200x630) and favicon formats from a project's branding, with brand colors, gradients, PNG/WebP/ICO |
+| [surface-recon](./skills/surface-recon/) | 0.1.0 | candidate | Maps what a service, site, desktop app, or file format exposes, and produces a recon report an implementer can build from. Classifies the target into one of eight terrains, each with the technique that works and the gates that stop a confident wrong report |
+| [cli-build](./skills/cli-build/) | 0.1.0 | candidate | Builds a CLI an agent can operate and a human can supervise. Distribution target first, then the command surface, then safety proportional to stakes. Carries the conventions that showed up independently across 14 built CLIs, and the anti-patterns that shipped anyway |
+| [skill-gen](./skills/skill-gen/) | 0.9.0 | deprecated | Generated skills from documentation. See [Maturity](#maturity) before installing |
 
 ### Publish
 
 Orchestrates a release without missing steps.
 
-| Skill | Status | What it does |
-|-------|--------|--------------|
-| [obsidian-plugin-release](./skills/obsidian-plugin-release/) | stable | Atomic release flow for Obsidian community plugins. Bumps the version across manifest.json, package.json, and versions.json, builds, lints, signs an annotated tag, and triggers a workflow that publishes with build-provenance attestation (SLSA in-toto). Passes the Obsidian Community automated review |
+| Skill | Version | Status | What it does |
+|-------|---------|--------|--------------|
+| [obsidian-plugin-release](./skills/obsidian-plugin-release/) | 1.0.0 | stable | Atomic release flow for Obsidian community plugins. Bumps the version across manifest.json, package.json, and versions.json, builds, lints, signs an annotated tag, and triggers a workflow that publishes with build-provenance attestation (SLSA in-toto). Passes the Obsidian Community automated review |
 
 ### Context
 
 Structures a repository so agents navigate it well.
 
-| Skill | Status | What it does |
-|-------|--------|--------------|
-| [intent-layer](./skills/intent-layer/) | stable | Sets up hierarchical AGENTS.md files so agents navigate your codebase like senior engineers. Built on [The Intent Layer](https://www.intent-systems.com/learn/intent-layer) by Tyler Brandt |
+| Skill | Version | Status | What it does |
+|-------|---------|--------|--------------|
+| [intent-layer](./skills/intent-layer/) | 1.0.0 | stable | Sets up hierarchical AGENTS.md files so agents navigate your codebase like senior engineers. Built on [The Intent Layer](https://www.intent-systems.com/learn/intent-layer) by Tyler Brandt |
 
 ## Maturity
 
@@ -72,6 +74,18 @@ How a skill moves:
 - **Promotion needs a named reason**, not a feeling. Which work it ran on, and what it caught.
 - **`deprecated` is not deletion.** The folder stays and the install command keeps resolving. Anyone who already installed it deserves to find out it is unmaintained rather than hit a dead link.
 - **Demotion is normal.** A skill that stopped earning its place says so.
+
+## Versioning
+
+Each skill carries a `version` in its frontmatter, tracking the skill as a document rather than any tool it wraps.
+
+| Bump | Means |
+|---|---|
+| major | The method changed: a phase added or removed, a reordered flow. Following the old version gives different results |
+| minor | Material added, or a claim corrected, without changing the flow |
+| patch | Wording, links, typos |
+
+A skill reaches `1.0.0` when it becomes `stable`: run on real work with the evidence recorded. Candidates stay on `0.x`, which is the honest signal that the contract can still move.
 
 ## Skills that ship from their own repo
 

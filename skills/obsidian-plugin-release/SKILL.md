@@ -1,5 +1,6 @@
 ---
 name: obsidian-plugin-release
+version: 1.0.0
 description: |
   Release a new version of an Obsidian community plugin without forgetting steps.
   Use when: (1) user says "release the plugin", "bump <plugin> to X.Y.Z", "ship a

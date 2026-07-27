@@ -1,5 +1,6 @@
 ---
 name: generate-brand-assets
+version: 1.0.0
 description: |
   Generate OG images and favicon based on project branding. Use when: (1) user needs
   social media preview images for their project, (2) user wants to generate a favicon,
