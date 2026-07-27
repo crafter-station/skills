@@ -34,7 +34,7 @@ Produces a new artifact from scratch.
 
 | Skill | Status | What it does |
 |-------|--------|--------------|
-| [generate-brand-assets](./skills/generate-brand-assets/) | candidate | Generates OG images (1200x630) and favicon formats from a project's branding, with brand colors, gradients, PNG/WebP/ICO |
+| [generate-brand-assets](./skills/generate-brand-assets/) | stable | Generates OG images (1200x630) and favicon formats from a project's branding, with brand colors, gradients, PNG/WebP/ICO |
 | [skill-gen](./skills/skill-gen/) | deprecated | Generated skills from documentation. See [Maturity](#maturity) before installing |
 
 ### Publish
@@ -43,7 +43,7 @@ Orchestrates a release without missing steps.
 
 | Skill | Status | What it does |
 |-------|--------|--------------|
-| [obsidian-plugin-release](./skills/obsidian-plugin-release/) | candidate | Atomic release flow for Obsidian community plugins. Bumps the version across manifest.json, package.json, and versions.json, builds, lints, signs an annotated tag, and triggers a workflow that publishes with build-provenance attestation (SLSA in-toto). Passes the Obsidian Community automated review |
+| [obsidian-plugin-release](./skills/obsidian-plugin-release/) | stable | Atomic release flow for Obsidian community plugins. Bumps the version across manifest.json, package.json, and versions.json, builds, lints, signs an annotated tag, and triggers a workflow that publishes with build-provenance attestation (SLSA in-toto). Passes the Obsidian Community automated review |
 
 ### Context
 
@@ -51,7 +51,7 @@ Structures a repository so agents navigate it well.
 
 | Skill | Status | What it does |
 |-------|--------|--------------|
-| [intent-layer](./skills/intent-layer/) | candidate | Sets up hierarchical AGENTS.md files so agents navigate your codebase like senior engineers. Built on [The Intent Layer](https://www.intent-systems.com/learn/intent-layer) by Tyler Brandt |
+| [intent-layer](./skills/intent-layer/) | stable | Sets up hierarchical AGENTS.md files so agents navigate your codebase like senior engineers. Built on [The Intent Layer](https://www.intent-systems.com/learn/intent-layer) by Tyler Brandt |
 
 ## Maturity
 
