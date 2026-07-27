@@ -52,14 +52,14 @@
     "surface-recon": {
       "category": "build",
       "maturity": "candidate",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "summary": "Distilled from 21 recon reports across public APIs, private GraphQL behind signed requests, login-walled portals, BaaS bundles, file formats, and desktop binaries. The seven-terrain classification and its gates come from that corpus, but the skill itself has not yet driven a recon end to end.",
       "since": "2026-07"
     },
     "cli-build": {
       "category": "build",
       "maturity": "candidate",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "summary": "Distilled from 14 CLIs with real code, four of them published. Its conventions are the ones that appeared in CLIs sharing no code, and its anti-patterns were verified against the source rather than remembered. Not yet used to build a CLI from scratch.",
       "since": "2026-07"
     }

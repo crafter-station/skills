@@ -1,6 +1,6 @@
 ---
 name: cli-build
-version: 0.1.0
+version: 0.2.0
 description: "Design and build a CLI that an AI agent can operate safely and a human can supervise. Use when the user wants to build a CLI, wrap an API in a command-line tool, add --json or --dry-run to an existing CLI, design a trust ladder or approval gate for risky commands, wrap an async API so agents do not write their own poll loop, or decide how to distribute a CLI (npm, native binary, source). Follows a surface-recon report when one exists."
 ---
 
@@ -122,6 +122,8 @@ Two more from the same corpus, both live in published packages:
 **Definition of done is observed behavior.** Run the command. Show the output. "The code looks right" is not verification. For anything touching a real provider, a smoke script against the live target, separate from unit tests, is what proves the integration.
 
 Then record the build in [cases/](cases/), and read [portfolio-shape.md](cases/portfolio-shape.md) first if you want the aggregate picture: what a mature CLI here actually has, and the gap between features present and features wired. One file per CLI: target, terrain, distribution choice, which blocks were adopted or rejected and why, what broke, what you would do differently. Distill repeated findings into [conventions.md](cases/conventions.md).
+
+**Log friction as it happens, not at the end.** A case written after the build is a reconstruction, and reconstructions lose the specifics worth keeping: which block you rejected and why, the convention that turned out wrong for this domain, the reference that was thin. Keep a running `friction.md` next to the code and fold it into the case at the end. What a reference got wrong is the evidence that corrects it, and this skill's own conventions were caught that way: seven claims inherited from an older version were false against the source.
 
 **Name your own code, not other people's.** A case about a CLI you wrote can be specific about what broke. A finding about someone else's package drops the subject and keeps the defect, and a third-party target you reconned is described by class, never by identity. The full boundary is in [cases/README.md](cases/README.md).
 
