@@ -10,6 +10,8 @@ Build a CLI whose primary user is an agent and whose supervisor is a human. That
 
 If a `surface-recon` report exists, start from it. If not and the target is a service you have not verified, run `surface-recon` first: building against a guessed API wastes more time than mapping it.
 
+**Open `friction.md` next to the code before Phase 1 and append as you go.** A block you rejected and why, a convention that turned out wrong for this domain, a reference that was thin. It folds into the case at the end, and it is what corrects this skill: seven claims inherited from an older version were false against the source, and they surfaced only because someone wrote down that they did not match.
+
 ## What agent-first actually means
 
 **Every CLI, no exceptions:**
@@ -123,11 +125,9 @@ Two more from the same corpus, both live in published packages:
 
 Then record the build in [cases/](cases/), and read [portfolio-shape.md](cases/portfolio-shape.md) first if you want the aggregate picture: what a mature CLI here actually has, and the gap between features present and features wired. One file per CLI: target, terrain, distribution choice, which blocks were adopted or rejected and why, what broke, what you would do differently. Distill repeated findings into [conventions.md](cases/conventions.md).
 
-**Log friction as it happens, not at the end.** A case written after the build is a reconstruction, and reconstructions lose the specifics worth keeping: which block you rejected and why, the convention that turned out wrong for this domain, the reference that was thin. Keep a running `friction.md` next to the code and fold it into the case at the end. What a reference got wrong is the evidence that corrects it, and this skill's own conventions were caught that way: seven claims inherited from an older version were false against the source.
-
 **Name your own code, not other people's.** A case about a CLI you wrote can be specific about what broke. A finding about someone else's package drops the subject and keeps the defect, and a third-party target you reconned is described by class, never by identity. The full boundary is in [cases/README.md](cases/README.md).
 
-**Done when:** the command has been run and its real output read, and a case file exists. Reporting done from code that looks right is the failure this criterion exists to catch.
+**Done when:** the command has been run and its real output read, and a case file exists with `friction.md` folded into it. Reporting done from code that looks right is the failure this criterion exists to catch.
 
 This is the part everyone skips, and skipping it is why the same lessons get rediscovered. The corpus behind this skill exists only because someone eventually wrote it down; before that, four CLIs had independently reinvented the same audit-log design.
 
@@ -139,6 +139,7 @@ This is the part everyone skips, and skipping it is why the same lessons get red
 - [audit-log-patterns.md](references/audit-log-patterns.md): two-phase writes, and the dead-code trap
 - [auth-patterns.md](references/auth-patterns.md): four observed architectures, rotation, secret handling
 - [build-and-runtime.md](references/build-and-runtime.md): the distribution matrix in detail
+- [cases/README.md](cases/README.md): how a case is written, and who may be named in one
 - [compounding-surface.md](references/compounding-surface.md): async `--wait`, vocabulary enforced in CI, `--deliver` and `feedback`. Sourced from published work rather than the corpus, and labeled as such
 
 ## Boundaries
