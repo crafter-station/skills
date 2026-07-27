@@ -1,6 +1,6 @@
 ---
 name: cli-build
-version: 0.5.0
+version: 0.6.0
 description: "Design and build a CLI that an AI agent can operate safely and a human can supervise. Use when the user wants to build a CLI, wrap an API in a command-line tool, add --json or --dry-run to an existing CLI, design a trust ladder or approval gate for risky commands, wrap an async API so agents do not write their own poll loop, or decide how to distribute a CLI (npm, native binary, source). Follows a surface-recon report when one exists."
 ---
 
@@ -21,6 +21,7 @@ If a `surface-recon` report exists, start from it. If not and the target is a se
 - A `schema` command, carrying a version field, so agents introspect operations at runtime instead of parsing `--help`. Present in only 3 of 14 corpus CLIs, all three among the most mature: simultaneously the highest-value agent-first convention and the least adopted.
 - Exit codes that mean something. Zero is success; distinguish user error from system failure.
 - Composable stdout. Data on stdout, diagnostics on stderr, always.
+- A secret read from the terminal never echoes. `prompt-secret` masks it and returns `null` with no TTY, so a piped invocation fails with a structured error instead of hanging on input that will never arrive.
 - A banner on bare invoke and `--help`: name, version, tagline. It goes **to stderr**, so a pipe stays clean, and it degrades to two plain lines when there is no TTY or `NO_COLOR` is set rather than vanishing. The `banner` block covers this, and the stderr detail is the whole reason to take the block rather than write a `console.log`.
 
 **When the domain has real consequences** (money, irreversible writes, third-party side effects, personal data):
@@ -70,6 +71,8 @@ Include a shorthand for the single most common operation. If ninety percent of u
 **Done when:** every command has a noun-verb name and a written JSON output shape. A command whose output shape is undecided is not shaped yet.
 
 **Add `nextSteps` to structured output.** Telling an agent what it can run next, in the response, prevents a class of flailing that `--help` does not.
+
+**Shape the human view separately.** The machine mode returns everything because the agent filters; the human mode returns what a person asked for. Building one output for both serves neither. Everything about legibility, which metric direction a reader assumes, where a scale's thresholds go, when repetition is a heading, is in [human-output.md](references/human-output.md). This skill's other gates cannot catch an unreadable table: the first CLI built with it passed every one of them and printed 275 rows for someone who asked what was playing that evening.
 
 ## Phase 3: assemble from proven blocks
 
@@ -134,7 +137,7 @@ Running it through `bun run src/cli.ts` verifies a file. Running `mycli` verifie
 
 **Verifying a new feature probes the old ones that share its stream.** The check for one feature is a check on everything else writing to the same place. On the first real run, confirming a fresh banner kept stdout clean turned up 810 bytes there, and none of it was the banner: a bare invoke had been writing human help text to stdout with a nonzero exit since the previous round. An agent piping the command with no arguments got prose in its data stream. Nobody had looked because bare invoke is not a case people test.
 
-**Definition of done is observed behavior.** Run the command. Show the output. "The code looks right" is not verification.
+**Definition of done is observed behavior.** Run the command. Show the output. Then read the human output as someone who does not know the domain: what does the biggest number mean, what does the eye land on first, is there a column where every row says the same thing. Those have answers a typecheck cannot produce. See [human-output.md](references/human-output.md). "The code looks right" is not verification.
 
 **Fixtures must cross a boundary the code orders or filters by.** A date rollover, a month rollover, an empty set. A fixture set that never crosses one tests the shape and not the logic: in the first real run of this skill, 54 green tests all shared a single day of data, and underneath them a command sorted by a formatted `DD/MM/YYYY` string and opened with next month's results.
 
@@ -160,6 +163,7 @@ This is the part everyone skips, and skipping it is why the same lessons get red
 - [audit-log-patterns.md](references/audit-log-patterns.md): two-phase writes, and the dead-code trap
 - [auth-patterns.md](references/auth-patterns.md): four observed architectures, rotation, secret handling
 - [build-and-runtime.md](references/build-and-runtime.md): the distribution matrix in detail
+- [human-output.md](references/human-output.md): the reader, not the supervisor. Metric direction, calibrated scales, what the human default should be
 - [cases/README.md](cases/README.md): how a case is written, and who may be named in one
 - [compounding-surface.md](references/compounding-surface.md): async `--wait`, vocabulary enforced in CI, `--deliver` and `feedback`. Sourced from published work rather than the corpus, and labeled as such
 

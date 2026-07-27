@@ -1,6 +1,6 @@
 # cligentic blocks
 
-A registry of CLI infrastructure primitives published as plain TypeScript files. Copy one into your project and you own it outright: no runtime dependency, no framework, no lock-in. Edit freely.
+A registry of 23 CLI infrastructure primitives published as plain TypeScript files. Copy one into your project and you own it outright: no runtime dependency, no framework, no lock-in. Edit freely.
 
 Registry root: `https://cligentic.railly.dev/r/`. Each block is served two ways: `<block>.ts` is the raw source, `<block>.json` is the registry entry with metadata.
 
@@ -152,6 +152,7 @@ Read the file after fetching. It is 50 to 200 lines of TypeScript, and understan
 | `next-steps` | Structured `nextSteps` hints on stderr. Tells an agent what to run next. |
 | `doctor` | Pre-flight environment check: dependencies, auth, connectivity. |
 | `api-key-wizard` | Interactive key setup with validation and storage. |
+| `prompt-secret` | Reads a secret from the TTY without echoing it. Returns `null` with no TTY instead of hanging. No runtime dependency. |
 | `skill-installer-prompt` | Offers to install an agent skill for your CLI from within the CLI. |
 
 ### Foundation
