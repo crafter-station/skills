@@ -168,7 +168,7 @@ Read the file after fetching. It is 50 to 200 lines of TypeScript, and understan
 | `argv` | Minimal argv parser, no framework dependency. |
 | `global-flags` | The standard set: `--json`, `--yes`, `--dry-run`, `--verbose`. |
 | `telemetry` | Opt-in telemetry gated on a local consent file. |
-| `banner` | Startup banner with version and mode. |
+| `banner` | Gradient ASCII wordmark: name, tagline, version. Writes to **stderr**, respects `NO_COLOR` and non-TTY. Needs `detect`. |
 
 ### Platform
 
@@ -184,6 +184,28 @@ Read the file after fetching. It is 50 to 200 lines of TypeScript, and understan
 | Block | What it gives you |
 |---|---|
 | `killswitch` | Its own registry category. Listed under Agent above. |
+
+## The one to take without thinking
+
+`banner`. Every CLI wants a wordmark on bare invoke, and writing it by hand is where the mistake happens: a `console.log` puts it on **stdout** and corrupts the first pipe an agent runs. The block writes to stderr, degrades to plain text under `NO_COLOR`, and vanishes when there is no TTY.
+
+```bash
+curl -o src/foundation/banner.ts https://cligentic.railly.dev/r/banner.ts
+curl -o src/platform/detect.ts https://cligentic.railly.dev/r/detect.ts
+```
+
+```ts
+printBanner({
+  name: "mycli",
+  tagline: "What it does, in one line.",
+  version: "1.2.0",
+  gradient: ["#FF6B1A", "#DB2627"],
+});
+```
+
+It needs `detect` for the color decision. Two files, one call.
+
+Verified: with no TTY, the same call degrades to two plain lines and **stdout stays at zero bytes**. That is the property worth the block. The ASCII wordmark and the gradient only render on a real terminal, which is the point.
 
 ## The core one
 

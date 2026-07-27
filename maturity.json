@@ -59,7 +59,7 @@
     "cli-build": {
       "category": "build",
       "maturity": "candidate",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "summary": "Distilled from 14 CLIs with real code, four of them published, then run end to end on its first real build. That run caught four defects that survived a clean typecheck and 54 green tests, and its friction log corrected six things in the skill.",
       "since": "2026-07"
     }
