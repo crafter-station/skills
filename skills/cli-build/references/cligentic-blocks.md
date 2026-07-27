@@ -207,6 +207,8 @@ It needs `detect` for the color decision. Two files, one call.
 
 Verified: with no TTY, the same call degrades to two plain lines and **stdout stays at zero bytes**. That is the property worth the block. The ASCII wordmark and the gradient only render on a real terminal, which is the point.
 
+It typechecks under `strict` with `noUncheckedIndexedAccess` and `moduleResolution: nodenext`. That was not true until the first project to copy it reported 10 errors upstream, which is worth knowing as a habit: **run your own typecheck right after copying a block, before writing code against it.** A block that compiles in its own repo can still fail in yours, and finding out three files later costs more than finding out immediately.
+
 ## The core one
 
 `trust-ladder` is the block to understand first. `approveGate()` is the whole idea:
