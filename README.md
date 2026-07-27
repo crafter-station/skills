@@ -11,9 +11,6 @@ npx skills add crafter-station/skills --skill intent-layer -g
 # Install skill-gen
 npx skills add crafter-station/skills --skill skill-gen -g
 
-# Install skillkit
-npx skills add crafter-station/skills --skill skillkit -g
-
 # Install supply-chain-audit
 npx skills add crafter-station/skills --skill supply-chain-audit -g
 
@@ -39,7 +36,6 @@ Works with Claude Code, Cursor, Copilot, and [10+ more agents](https://github.co
 | Skill | What it does |
 |-------|--------------|
 | [skill-gen](./meta/skill-gen/) | Create effective agent skills with guided workflows, validation, and packaging tools |
-| [skillkit](./meta/skillkit/) | Local-first analytics for AI agent skills. Tracks usage, measures context budget, prunes unused skills |
 
 ### Security
 
@@ -65,6 +61,7 @@ A skill that documents one tool belongs with that tool, so it cannot drift from 
 
 | Skill | Install |
 |-------|---------|
+| [skillkit](https://github.com/crafter-station/skill-kit/tree/main/packages/skill) | `npx skills add crafter-station/skill-kit` |
 | [spoti-cli](https://github.com/crafter-station/spoti-cli/tree/main/skills/spoti-cli) | `npx skills add crafter-station/spoti-cli` |
 | [sismo-cli](https://github.com/crafter-station/sismo-abierto/tree/main/skills/sismo-cli) | `npx skills add crafter-station/sismo-abierto` |
 
