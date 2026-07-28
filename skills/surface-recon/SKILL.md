@@ -1,6 +1,6 @@
 ---
 name: surface-recon
-version: 0.4.0
+version: 0.5.0
 description: "Map what a target exposes and produce a recon report an implementer can build from. Works on web services and APIs, login-walled portals, desktop apps and compiled binaries, file formats, and hardware or accelerators whose real constraints are undocumented. Use when the user says 'recon this', 'reverse engineer this', 'map this API', 'figure out their endpoints', 'what does this device actually support', 'I want to build a CLI/client for X', or pastes a URL and asks what it exposes. Also use before building any integration against something whose contract you have not verified."
 allowed-tools: Bash(agent-browser:*), Bash(npx agent-browser:*)
 ---
