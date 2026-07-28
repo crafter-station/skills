@@ -1,6 +1,6 @@
 ---
 name: cli-build
-version: 0.9.0
+version: 0.9.1
 description: "Design and build a CLI that an AI agent can operate safely and a human can supervise. Use when the user wants to build a CLI, wrap an API in a command-line tool, add --json or --dry-run to an existing CLI, design a trust ladder or approval gate for risky commands, wrap an async API so agents do not write their own poll loop, or decide how to distribute a CLI (npm, native binary, source). Follows a surface-recon report when one exists."
 ---
 
@@ -16,13 +16,12 @@ If a `surface-recon` report exists, start from it. If not and the target is a se
 
 **Every CLI, no exceptions:**
 
-- `--json` for machine-readable output, and **JSON automatically when stdout is not a TTY** even without the flag. Three independently built CLIs converged on this; it is the single most valuable default.
-- No prompt ever blocks a non-interactive run. In `--json` mode or piped input, anything that would prompt must fail with a structured error instead of hanging.
-- A `schema` command, carrying a version field, so agents introspect operations at runtime instead of parsing `--help`. Present in only 3 of 14 corpus CLIs, all three among the most mature: simultaneously the highest-value agent-first convention and the least adopted.
-- Exit codes that mean something. Zero is success; distinguish user error from system failure.
-- Composable stdout. Data on stdout, diagnostics on stderr, always.
-- A secret read from the terminal never echoes. `prompt-secret` masks it and returns `null` with no TTY, so a piped invocation fails with a structured error instead of hanging on input that will never arrive.
-- A banner on bare invoke and `--help`: name, version, tagline. It goes **to stderr**, so a pipe stays clean, and it degrades to two plain lines when there is no TTY or `NO_COLOR` is set rather than vanishing. The `banner` block covers this, and the stderr detail is the whole reason to take the block rather than write a `console.log`.
+- **`--json`, and JSON automatically when stdout is not a TTY** even without the flag. Three CLIs converged on this independently; it is the most valuable default here.
+- **No prompt ever blocks a non-interactive run.** Anything that would prompt fails with a structured error instead of hanging.
+- **A `schema` command with a version field**, so agents introspect at runtime instead of parsing `--help`. Present in 3 of 14 corpus CLIs: the highest-value convention and the least adopted.
+- **Exit codes that mean something.** Zero is success; user error and system failure are distinguishable.
+- **Data on stdout, diagnostics on stderr, always.** Including the banner, which is why `banner` is a block and not a `console.log`.
+- **A secret read from the terminal never echoes**, and returns `null` with no TTY rather than hanging. That is `prompt-secret`.
 
 **When the domain has real consequences** (money, irreversible writes, third-party side effects, personal data):
 
@@ -125,35 +124,32 @@ Two more from the same corpus, both live in published packages:
 
 ## Phase 6: verify, then write it down
 
-**Link it globally first, then dogfood it.** Before verifying anything, put the CLI on your PATH so you invoke it the way a user will:
+**Link it globally first.** Before verifying anything, put the CLI on your PATH so you invoke it the way a user will:
 
 ```bash
 bun link          # or npm link
-which mycli       # confirm it resolves
-mycli --help
+which mycli && mycli --help
 ```
 
-Running it through `bun run src/cli.ts` verifies a file. Running `mycli` verifies the thing you ship: the bin entry, the shebang, the resolved dependencies, the banner. Three of those are invisible from a source-file invocation, and a broken `bin` path is the kind of defect that reaches a user's first install.
+Running `bun run src/cli.ts` verifies a file. Running `mycli` verifies what ships: the bin entry, the shebang, the resolved dependencies, the banner. Three of those are invisible from a source-file invocation, and a broken `bin` path reaches a user's first install.
 
-**Verifying a new feature probes the old ones that share its stream.** The check for one feature is a check on everything else writing to the same place. On the first real run, confirming a fresh banner kept stdout clean turned up 810 bytes there, and none of it was the banner: a bare invoke had been writing human help text to stdout with a nonzero exit since the previous round. An agent piping the command with no arguments got prose in its data stream. Nobody had looked because bare invoke is not a case people test.
+**Definition of done is observed behavior.** Run the command, read the output, and read it twice: once for correctness, once as someone who does not know the domain. What does the biggest number mean, what does the eye land on first, is there a column where every row says the same thing. See [human-output.md](references/human-output.md).
 
-**Definition of done is observed behavior.** Run the command. Show the output. Then read the human output as someone who does not know the domain: what does the biggest number mean, what does the eye land on first, is there a column where every row says the same thing. Those have answers a typecheck cannot produce. See [human-output.md](references/human-output.md). "The code looks right" is not verification.
+**Verifying a new feature probes the old ones sharing its stream.** Confirming a fresh banner kept stdout clean turned up 810 bytes there, none of it the banner: a bare invoke had been writing help text to stdout with a nonzero exit since the previous round. Nobody had looked because bare invoke is not a case people test.
 
-**Fixtures must cross a boundary the code orders or filters by.** A date rollover, a month rollover, an empty set. A fixture set that never crosses one tests the shape and not the logic: in the first real run of this skill, 54 green tests all shared a single day of data, and underneath them a command sorted by a formatted `DD/MM/YYYY` string and opened with next month's results.
+A green suite proves less than it appears to. What it misses, and how to close each gap, is in [testing.md](references/testing.md).
 
-**For any function whose failure mode is bad input, assert on the bad input.** A test that only passes valid arguments cannot distinguish a validating implementation from a silently-dropping one. The same run shipped a `--fields` that returned eleven empty objects under `ok: true` with exit 0 for an unknown field name, and the test could not fail because it only ever passed valid names. A successful envelope containing nothing is the worst output an agent can receive. For anything touching a real provider, a smoke script against the live target, separate from unit tests, is what proves the integration.
+**Ship the agent's manual with the CLI.** A `skills/<name>/SKILL.md` in the CLI's own repo: commands, JSON envelope, the flags that matter, workflows worth composing. Without it every agent rediscovers the surface through `--help`, which is the cost this skill exists to remove. It lives with the code so it cannot drift, and it makes the CLI installable with `npx skills add <owner>/<repo>`.
 
-Then record the build in [cases/](cases/), and read [portfolio-shape.md](cases/portfolio-shape.md) first if you want the aggregate picture: what a mature CLI here actually has, and the gap between features present and features wired. One file per CLI: target, terrain, distribution choice, which blocks were adopted or rejected and why, what broke, what you would do differently. Distill repeated findings into [conventions.md](cases/conventions.md).
+**Then record the build** in [cases/](cases/): target, terrain, distribution choice, which blocks were adopted or rejected and why, what broke, what you would do differently. Fold `friction.md` in. Distill repeated findings into [conventions.md](cases/conventions.md), and read [portfolio-shape.md](cases/portfolio-shape.md) for the aggregate picture.
 
-**Ship the agent's manual with the CLI.** A CLI whose primary user is an agent needs a `skills/<name>/SKILL.md` in its own repo: the commands, the JSON envelope, the flags that matter, and the workflows worth composing. Without it every agent rediscovers the surface through `--help`, which is the cost this whole skill exists to remove. It lives in the CLI's repo rather than a skills catalog, so it cannot drift from the commands it describes, and it makes the CLI installable with `npx skills add <owner>/<repo>`.
+**Name your own code, not other people's.** A case about a CLI you wrote can be specific about what broke. A finding about someone else's package drops the subject and keeps the defect. The full boundary is in [cases/README.md](cases/README.md).
 
-**Name your own code, not other people's.** A case about a CLI you wrote can be specific about what broke. A finding about someone else's package drops the subject and keeps the defect, and a third-party target you reconned is described by class, never by identity. The full boundary is in [cases/README.md](cases/README.md).
+**Done when:** the CLI has been linked globally and run by its own name, its real output read, `skills/<name>/SKILL.md` exists with valid frontmatter, and a case file exists with `friction.md` folded in.
 
-**Done when:** the CLI has been linked globally and run by its own name, its real output read, `skills/<name>/SKILL.md` exists with valid frontmatter, and a case file exists with `friction.md` folded into it.
+`npx skills add <owner>/<repo>` cannot be checked until the remote exists, and its failure for an unpublished repo is indistinguishable from a malformed SKILL.md unless you read the message. Valid frontmatter is a local check; installable is post-push.
 
-Note that `npx skills add <owner>/<repo>` cannot be checked until the remote exists, and its failure for an unpublished repo is indistinguishable from a malformed SKILL.md unless you read the message. The file being valid is a local check; being installable is a post-push one. Reporting done from code that looks right is the failure this criterion exists to catch.
-
-This is the part everyone skips, and skipping it is why the same lessons get rediscovered. The corpus behind this skill exists only because someone eventually wrote it down; before that, four CLIs had independently reinvented the same audit-log design.
+This is the part everyone skips, and skipping it is why the same lessons get rediscovered. Before someone wrote the corpus down, four CLIs had independently reinvented the same audit-log design.
 
 ## References
 
@@ -163,18 +159,15 @@ This is the part everyone skips, and skipping it is why the same lessons get red
 - [audit-log-patterns.md](references/audit-log-patterns.md): two-phase writes, and the dead-code trap
 - [auth-patterns.md](references/auth-patterns.md): four observed architectures, rotation, secret handling
 - [build-and-runtime.md](references/build-and-runtime.md): the distribution matrix in detail
+- [testing.md](references/testing.md): what a green suite fails to prove
 - [human-output.md](references/human-output.md): the reader, not the supervisor. Metric direction, calibrated scales, what the human default should be
 - [cases/README.md](cases/README.md): how a case is written, and who may be named in one
 - [compounding-surface.md](references/compounding-surface.md): async `--wait`, vocabulary enforced in CI, `--deliver` and `feedback`. Sourced from published work rather than the corpus, and labeled as such
 
 ## Boundaries
 
-**Ship flags that fire.** A documented feature is a wired one.
-
-**Keep `--json` as output mode.** JSON input gets its own flag name, so an agent arriving with the convention gets what it expects.
-
-**Claim what you implemented.** NDJSON, day-bucketed audit, and dry-run each earn a mention once the code does them.
+The phases above say what to do. These are the two that hold when a phase does not obviously apply:
 
 **Store identifiers, take secrets from the environment.** A password belongs in memory for the session, or in a keychain. The persisted config holds the account id and the username.
 
-**Report done from observed output.** Run the command, read what it printed, then say it works.
+**Claim what you implemented.** NDJSON, day-bucketed audit, and dry-run each earn a mention once the code does them, not before.
