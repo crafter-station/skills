@@ -20,6 +20,12 @@ Verify: the URL in your capture should be the one that serves the action you car
 
 **Did you drive the actual action?** Endpoints appear on interaction, not on page load. A HAR from a bare `open` shows you the shell.
 
+**Is a state you classified stable across calls?** Ask for the same resource twice. A value that differs between responses is not an attribute of the resource, and filing it next to the stable ones makes the client treat it as fixed. In one recon a seat state mapped as one of eight statuses turned out to be the seat the provider pre-assigns to each transaction: three orders on the same session returned three different seats. It went from a curious color to the default suggestion for the reserve command, and only because someone asked what it was.
+
+**Did you reproduce without credentials before blaming your account?** A failure that persists with no identity is not about your identity. To separate "they blocked me" from "it is down for everyone", drop the session: public reads still returning 200 rules out an IP block, an endpoint answering 401 before its suspension message shows the session filter runs first, and a clean browser reaching the normal login panel rules out a ban.
+
+**A flow captured with a browser is not verified until you replay it without one.** The browser sends cookies by domain, follows redirects, and holds state, so a HAR records the outcome rather than the requirement. Phase 3 already says to replay a signature outside the browser; this generalizes it to the whole flow. Two first-use failures in one project had exactly this root: a cookie prefix and a required header, both invisible in the capture because the browser supplied them.
+
 **An endpoint you assembled from bundle strings is not an endpoint.** A route built out of grepped constants is a guess, and a 404 page served under HTTP 200 will confirm it for you. On the first real run of this skill, four attempts were burned this way. Either the request appears in traffic you drove, or it goes under "Needs verification" with the interaction that would produce it. There is no third category.
 
 **Did you keep the evidence?** A finding whose HAR is gone cannot be re-verified. One corpus report claimed a recon technique had been used but the repository preserved no receipt, so the claim had to be re-derived from scratch. Save the HAR. Note the bundle hash if you read a bundle.
