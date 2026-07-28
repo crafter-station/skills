@@ -1,6 +1,6 @@
 ---
 name: cli-build
-version: 0.6.0
+version: 0.7.0
 description: "Design and build a CLI that an AI agent can operate safely and a human can supervise. Use when the user wants to build a CLI, wrap an API in a command-line tool, add --json or --dry-run to an existing CLI, design a trust ladder or approval gate for risky commands, wrap an async API so agents do not write their own poll loop, or decide how to distribute a CLI (npm, native binary, source). Follows a surface-recon report when one exists."
 ---
 

@@ -96,6 +96,14 @@ None of this touches machine mode. `--json` stays the stable contract, and every
 
 The two modes diverge on purpose: the agent gets everything and filters, the human gets what they asked for. Building one output for both produces something that serves neither.
 
+## A test suite never exercises the color path
+
+`bun test`, `vitest`, and every other runner execute without a TTY, so `shouldColor()` returns false and every styling function returns raw text. A green suite over a formatting layer proves the plain branch works and says nothing about the colored one.
+
+That is why alignment bugs survive tests: the escape sequences that break column math are never in the string being asserted. To test alignment, inject the escapes into the fixture by hand.
+
+Same family as a test that only passes valid input: it cannot fail in the way the code fails.
+
 ## The check this file adds
 
 The skill's Phase 6 says to run the command and read the output. That criterion caught real defects, and it is not sufficient on its own, because "the output is correct" and "the output is readable" are different questions.

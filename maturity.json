@@ -52,14 +52,14 @@
     "surface-recon": {
       "category": "build",
       "maturity": "candidate",
-      "version": "0.3.0",
-      "summary": "Distilled from 21 recon reports across public APIs, private GraphQL behind signed requests, login-walled portals, BaaS bundles, file formats, and desktop binaries. First real run confirmed its terrain call and killed a scope assumption the brief had drawn one step too far.",
+      "version": "0.4.0",
+      "summary": "Distilled from 21 recon reports, then run against a live target whose purchase flow turned out to be unmappable rather than un-automatable. Its friction log added five gates, including reproducing without credentials before blaming your account and checking whether a state you classified is stable across calls.",
       "since": "2026-07"
     },
     "cli-build": {
       "category": "build",
       "maturity": "candidate",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "summary": "Distilled from 14 CLIs with real code, four of them published, then run end to end twice on the same build. The two runs caught five defects that survived a clean typecheck and 59 green tests, produced twelve corrections to the skill, and fixed three things upstream in cligentic including a block that did not exist.",
       "since": "2026-07"
     }
