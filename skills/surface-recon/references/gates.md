@@ -24,6 +24,8 @@ Verify: the URL in your capture should be the one that serves the action you car
 
 **Did you reproduce without credentials before blaming your account?** A failure that persists with no identity is not about your identity. To separate "they blocked me" from "it is down for everyone", drop the session: public reads still returning 200 rules out an IP block, an endpoint answering 401 before its suspension message shows the session filter runs first, and a clean browser reaching the normal login panel rules out a ban.
 
+**Then keep going, because ruling out your identity does not name the cause.** In the run this came from, the three measurements correctly cleared the account and the report stopped there, treating the endpoint as blocked. It was scheduled maintenance. A transient outage and a permanent block produce the same symptom and demand opposite verdicts: one says wait and re-measure, the other says the surface is unreachable. Before writing either, check the provider's status page and social account, look for a maintenance window in the response body or headers, and **re-measure later**. A single measurement cannot tell a wall from a closed door.
+
 **A flow captured with a browser is not verified until you replay it without one.** The browser sends cookies by domain, follows redirects, and holds state, so a HAR records the outcome rather than the requirement. Phase 3 already says to replay a signature outside the browser; this generalizes it to the whole flow. Two first-use failures in one project had exactly this root: a cookie prefix and a required header, both invisible in the capture because the browser supplied them.
 
 **An endpoint you assembled from bundle strings is not an endpoint.** A route built out of grepped constants is a guess, and a 404 page served under HTTP 200 will confirm it for you. On the first real run of this skill, four attempts were burned this way. Either the request appears in traffic you drove, or it goes under "Needs verification" with the interaction that would produce it. There is no third category.
@@ -67,6 +69,12 @@ Apply these per row of the endpoint table.
 **Is the maintenance risk named?** An undocumented endpoint has no contract and no deprecation notice. If the plan depends on a minified signing function, a coordinate-clicked widget, or a scraped HTML structure, say that it will break. Roughly when, if you can tell.
 
 **Are the "needs verification" items actionable?** Each should say what would confirm it, not just that it is unconfirmed.
+
+**Does the verdict rest on the reason you gave for it?** A conclusion that survives a correction to its premise was not resting on that premise.
+
+In the run this skill came from, a verdict of "build it narrowly" held through three readings of the same target: first "the purchase flow is unmappable", then "it needs an account", then, with the account, the whole surface open and the real reason visible, which was that reading the seat map opens an order in the provider's system and a hold takes real inventory. Same verdict, three different justifications, and only the last one would have survived contact with a credential.
+
+Being right for two rounds by accident is not a success to record. When a premise turns out wrong and the verdict does not move, say so in the report: it tells the reader the verdict was load-bearing on something you had not named yet, and it is the honest version of a lucky call.
 
 ## The failure this all prevents
 

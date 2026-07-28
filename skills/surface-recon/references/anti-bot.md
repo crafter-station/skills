@@ -45,6 +45,8 @@ So: log in headed, extract the session cookie or token, then do the actual mappi
 
 **Masked or custom form inputs.** Not anti-bot exactly, but the same symptom: automation cannot type into the field. Custom components sometimes ignore synthetic events. If `fill()` silently does nothing, the input is a custom component, and you need real key events or direct state manipulation.
 
+**Scheduled maintenance.** Not anti-bot at all, and the easiest thing to misread as one. A provider taking its purchase flow down for a window produces the same symptom as a block: your requests stop working while nothing about your setup changed. The tell is that it clears on its own, which you only see if you re-measure. Check the status page and the provider's social account before writing a blocked verdict, and note the time of every measurement so a later run can tell recovery from randomness.
+
 **Connection reset on a cold session.** One legacy portal reset the connection on a clean session while working normally on a warm one. Try a persisted profile before concluding the endpoint is dead.
 
 ## Rate limits: report what you measured
