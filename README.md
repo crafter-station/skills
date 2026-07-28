@@ -36,7 +36,7 @@ Produces a new artifact from scratch.
 |-------|---------|--------|--------------|
 | [generate-brand-assets](./skills/generate-brand-assets/) | 1.0.0 | stable | Generates OG images (1200x630) and favicon formats from a project's branding, with brand colors, gradients, PNG/WebP/ICO |
 | [surface-recon](./skills/surface-recon/) | 0.6.0 | candidate | Maps what a service, site, desktop app, or file format exposes, and produces a recon report an implementer can build from. Classifies the target into one of eight terrains, each with the technique that works and the gates that stop a confident wrong report |
-| [cli-build](./skills/cli-build/) | 0.9.0 | candidate | Builds a CLI an agent can operate and a human can supervise. Distribution target first, then the command surface, then safety proportional to stakes. Carries the conventions that showed up independently across 14 built CLIs, and the anti-patterns that shipped anyway |
+| [cli-build](./skills/cli-build/) | 0.9.1 | candidate | Builds a CLI an agent can operate and a human can supervise. Distribution target first, then the command surface, then safety proportional to stakes. Carries the conventions that showed up independently across 14 built CLIs, and the anti-patterns that shipped anyway |
 | [skill-gen](./skills/skill-gen/) | 0.9.0 | deprecated | Generated skills from documentation. See [Maturity](#maturity) before installing |
 
 ### Publish
