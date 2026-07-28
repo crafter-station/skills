@@ -1,6 +1,6 @@
 # cligentic blocks
 
-A registry of 23 CLI infrastructure primitives published as plain TypeScript files. Copy one into your project and you own it outright: no runtime dependency, no framework, no lock-in. Edit freely.
+A registry of 24 CLI infrastructure primitives published as plain TypeScript files. Copy one into your project and you own it outright: no runtime dependency, no framework, no lock-in. Edit freely.
 
 Registry root: `https://cligentic.railly.dev/r/`. Each block is served two ways: `<block>.ts` is the raw source, `<block>.json` is the registry entry with metadata.
 
@@ -24,7 +24,7 @@ Two kinds, and both matter.
 
 ### Block dependencies, and yes they are recursive
 
-Twelve of the twenty-two blocks are self-contained. The other ten declare `registryDependencies`, **and those dependencies have dependencies**. Resolving one level is not enough.
+Twelve of the twenty-four blocks are self-contained. The other ten declare `registryDependencies`, **and those dependencies have dependencies**. Resolving one level is not enough.
 
 The graph, in full:
 
@@ -179,6 +179,7 @@ Read the file after fetching. It is 50 to 200 lines of TypeScript, and understan
 | `open-url` | Cross-OS `open` / `xdg-open` / `start`. |
 | `copy-clipboard` | Cross-OS clipboard write. |
 | `notify-os` | Native OS notification. |
+| `style` | Styling that respects `NO_COLOR` in one place, plus `visibleWidth` / `padVisible` / `truncateVisible` so a table aligns once cells carry escapes. Needs `detect`. |
 
 ### Safety
 

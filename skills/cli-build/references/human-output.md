@@ -96,11 +96,32 @@ None of this touches machine mode. `--json` stays the stable contract, and every
 
 The two modes diverge on purpose: the agent gets everything and filters, the human gets what they asked for. Building one output for both produces something that serves neither.
 
+## Color, emphasis, and aligned columns
+
+Take the `style` block rather than writing this. The colors are the easy part; what gets written wrong is the width.
+
+```bash
+curl -o src/platform/style.ts https://cligentic.railly.dev/r/style.ts
+curl -o src/platform/detect.ts https://cligentic.railly.dev/r/detect.ts
+```
+
+`"\x1b[1mHi\x1b[0m".length` is 12 and its width on screen is 2, so any column alignment using `.length` on styled text is off by the size of the escapes. The block ships `visibleWidth`, `padVisible`, `padStartVisible`, and `truncateVisible` for exactly that, plus `bold`, `dim`, `italic`, `underline` and a 256-color semantic set (`danger`, `warn`, `ok`, `info`, `muted`).
+
+Three decisions in it worth knowing, because they are the ones you would get wrong writing it fresh:
+
+- **One place consults `shouldColor()`.** Styling applied per call site is styling that leaks into a piped stream the first time someone forgets the check.
+- **256-color, not the basic 8.** Basic red and green render as whatever the user's theme assigns, which on a light terminal can be unreadable and on a themed dark one indistinguishable from each other.
+- **Semantic names over color names.** A call site reads as intent, and the palette can change without touching it.
+
+**What to emphasize, not how.** The block gives you the verbs; deciding where they go is the work in this file. Bold the thing the eye should land on first, which is usually a header or the one row that demands action. Dim what is context: separators, units, values a reader scans past. Color carries a state that has an ordering (fine, warning, urgent) and nothing else, because a color used decoratively spends the reader's only channel for urgency.
+
+And every rule above still applies underneath. A colored column that reads backwards is worse than a plain one that reads correctly.
+
 ## A test suite never exercises the color path
 
 `bun test`, `vitest`, and every other runner execute without a TTY, so `shouldColor()` returns false and every styling function returns raw text. A green suite over a formatting layer proves the plain branch works and says nothing about the colored one.
 
-That is why alignment bugs survive tests: the escape sequences that break column math are never in the string being asserted. To test alignment, inject the escapes into the fixture by hand.
+That is why alignment bugs survive tests: the escape sequences that break column math are never in the string being asserted. To test alignment, inject the escapes into the fixture by hand, or assert on `visibleWidth` rather than `.length`.
 
 Same family as a test that only passes valid input: it cannot fail in the way the code fails.
 
