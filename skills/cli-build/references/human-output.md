@@ -113,7 +113,28 @@ Three decisions in it worth knowing, because they are the ones you would get wro
 - **256-color, not the basic 8.** Basic red and green render as whatever the user's theme assigns, which on a light terminal can be unreadable and on a themed dark one indistinguishable from each other.
 - **Semantic names over color names.** A call site reads as intent, and the palette can change without touching it.
 
-**What to emphasize, not how.** The block gives you the verbs; deciding where they go is the work in this file. Bold the thing the eye should land on first, which is usually a header or the one row that demands action. Dim what is context: separators, units, values a reader scans past. Color carries a state that has an ordering (fine, warning, urgent) and nothing else, because a color used decoratively spends the reader's only channel for urgency.
+**What to emphasize, not how.** The block gives you the verbs; deciding where they go is the work in this file. Bold the thing the eye should land on first, which is usually a header or the one row that demands action. Dim what is context: separators, units, values a reader scans past.
+
+**Color carries a state with an ordering, and errors are the state that must have one.** The mapping worth defaulting to:
+
+| Verb | State |
+|---|---|
+| `danger` | An error, and every error. Nothing else. |
+| `warn` | Something irreversible is about to happen, or a dry run stands in for it |
+| `ok` | An operation completed |
+| `info` | A value that departs from the default and the reader should notice |
+| `muted` | Context: separators, units, hints, anything scanned past |
+
+The failure this prevents is specific and was observed. One CLI used amber for warnings, green for success, and blue for a non-default badge, and printed its errors as plain `Error: message` with no color at all. The most important state it reported had no signal while a format badge had one, and the only use of red in the codebase was a red checkmark on logout, where the glyph said success and the color said failure.
+
+Two rules fall out of that:
+
+- **The glyph and the color must agree.** A red `✓` asks the reader to resolve a contradiction that has no answer.
+- **Reach for red only for errors.** Once red means anything else, it stops meaning error, and error is the one state a reader must not have to parse.
+
+An error line reads best as three levels: the word in `danger`, a searchable code `muted` beside it, the message plain, and the hint `muted` on its own line, because the hint is the way out rather than the problem.
+
+A color used decoratively spends the reader's only channel for urgency.
 
 And every rule above still applies underneath. A colored column that reads backwards is worse than a plain one that reads correctly.
 
