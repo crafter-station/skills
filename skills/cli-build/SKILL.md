@@ -1,6 +1,6 @@
 ---
 name: cli-build
-version: 0.7.0
+version: 0.8.0
 description: "Design and build a CLI that an AI agent can operate safely and a human can supervise. Use when the user wants to build a CLI, wrap an API in a command-line tool, add --json or --dry-run to an existing CLI, design a trust ladder or approval gate for risky commands, wrap an async API so agents do not write their own poll loop, or decide how to distribute a CLI (npm, native binary, source). Follows a surface-recon report when one exists."
 ---
 
@@ -78,7 +78,7 @@ Include a shorthand for the single most common operation. If ninety percent of u
 
 Every CLI needs the same primitives: flag parsing, config paths, atomic writes, audit logs, TTY detection, approval gates, error shapes. Writing them fresh each time is where the time goes and where the bugs live.
 
-**Default to copying proven blocks.** [cligentic](references/cligentic-blocks.md) is a registry of 23 such blocks: trust ladder, killswitch, JSON mode, audit log, atomic write, XDG paths, config, session, error map, global flags, doctor, plus platform helpers. They are plain TypeScript you own outright after copying; no runtime dependency, no framework lock-in.
+**Default to copying proven blocks.** [cligentic](references/cligentic-blocks.md) is a registry of 24 such blocks: trust ladder, killswitch, JSON mode, audit log, atomic write, XDG paths, config, session, error map, global flags, doctor, style, plus platform helpers. They are plain TypeScript you own outright after copying; no runtime dependency, no framework lock-in.
 
 ```bash
 curl -o src/lib/atomic-write.ts https://cligentic.railly.dev/r/atomic-write.ts

@@ -59,7 +59,7 @@
     "cli-build": {
       "category": "build",
       "maturity": "candidate",
-      "version": "0.7.0",
+      "version": "0.8.0",
       "summary": "Distilled from 14 CLIs with real code, four of them published, then run end to end twice on the same build. The two runs caught five defects that survived a clean typecheck and 59 green tests, produced twelve corrections to the skill, and fixed three things upstream in cligentic including a block that did not exist.",
       "since": "2026-07"
     }
