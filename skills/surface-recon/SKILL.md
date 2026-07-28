@@ -1,6 +1,6 @@
 ---
 name: surface-recon
-version: 0.5.0
+version: 0.6.0
 description: "Map what a target exposes and produce a recon report an implementer can build from. Works on web services and APIs, login-walled portals, desktop apps and compiled binaries, file formats, and hardware or accelerators whose real constraints are undocumented. Use when the user says 'recon this', 'reverse engineer this', 'map this API', 'figure out their endpoints', 'what does this device actually support', 'I want to build a CLI/client for X', or pastes a URL and asks what it exposes. Also use before building any integration against something whose contract you have not verified."
 allowed-tools: Bash(agent-browser:*), Bash(npx agent-browser:*)
 ---
@@ -34,6 +34,19 @@ Two specialized ones carry most of the recon weight:
 - **`electron`** automates desktop apps over their debugging port, which beats unpacking them: `agent-browser skills get electron`
 
 This skill deliberately does not restate what those cover. When a capability is documented there, [agent-browser-recon.md](references/agent-browser-recon.md) points at it instead of copying it, so the two cannot drift apart.
+
+## When an instrument says the element is not there
+
+**Screenshot first, and look at it with your own eyes.** If a page the user sees working reports "element not found", the capture comes before exhausting selectors, not after.
+
+Three times in one project an indirect instrument said "does not exist" and the screenshot showed the element on screen: a login panel, a set of showtimes, a buy button. Each time the tooling was correctly built and pointed at the wrong thing. A login panel generates no traffic and contains no domain keywords, so it is invisible to a network tab and a DOM grep at the same time.
+
+Two specifics worth knowing:
+
+- **An open modal invalidates the entire accessibility tree.** A cookie banner returns as the whole snapshot, which reads as "the page has no content". Dismissing it is a precondition of any structural read, not a cleanup step.
+- **Match on substrings, not equality.** A selector comparing against `19:20` finds nothing on a page rendering `19:20hs`.
+
+The failure mode this prevents is not a missing tool. It is reaching for the instrument that represents you as someone who reads systems, over the one that answers the question.
 
 ## Phase 0: classify the terrain
 
@@ -101,7 +114,7 @@ When the network tab does not answer it:
 - **Introspection disabled on GraphQL** (403 on `__schema`): the schema is still in the client bundle. Grep the chunks for operation names and field selections.
 - **Request signing or custom headers**: the algorithm is in the bundle. Find the function that builds the header, then **verify by replaying a signed request outside the browser**. A signing algorithm you have not replayed is a hypothesis.
 - **Desktop app**: connect to it rather than unpacking it. Every Electron app exposes a debugging port, so its private API becomes observable with the same workflow as a web page (`agent-browser skills get electron`). Keep `asar list` and `strings` for what never runs: dead paths, embedded source layout, endpoints the UI does not reach.
-- **React SPA**: `react tree` and `react inspect` give you the data model the client believes in, which is often cleaner than the API response. Needs `--enable react-devtools` at launch.
+- **React SPA**: `react tree` and `react inspect` give you the data model the client believes in, which is often cleaner than the API response. Needs `--enable react-devtools` at launch. **Check that the tree is not empty before relying on it**: a server-rendered app with few client components returns almost nothing, and a production build has mangled component names. It is a fast path, not a guarantee.
 - **Client-held state**: before deobfuscating a bundle, `eval` the framework globals. Hydration payloads and public config are frequently right there.
 - **Hardware or an accelerator**: the acceptance boundary is the compiler or runtime, not a network call. Export a real workload and count what gets rejected or silently falls back, then measure per compute unit to confirm where it actually ran.
 - **BaaS client**: the bundle names the tables, columns, and views directly.

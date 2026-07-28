@@ -52,7 +52,7 @@
     "surface-recon": {
       "category": "build",
       "maturity": "candidate",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "summary": "Distilled from 21 recon reports, then run against a live target across three readings that each corrected the previous one. Its friction log added seven gates, including reproducing without credentials before blaming your account, distinguishing a maintenance window from a block, and noticing when a verdict survives a correction to the premise it rested on.",
       "since": "2026-07"
     },

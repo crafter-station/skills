@@ -83,6 +83,8 @@ Mocking makes the page lie on purpose. That is the point and also the hazard.
 
 **`react tree` needs `--enable react-devtools` at launch.** Without it: `React DevTools hook not installed`. Verified. A server-rendered app also yields a nearly empty tree, and a production build has mangled component names, so treat it as a fast path rather than a guarantee.
 
+**An empty tree is not evidence of an empty page.** Measured on one target: `react tree` returned nothing while the page rendered a full grid. Treat a null result from any structural instrument as "this instrument cannot see it", never as "it is not there". The cheapest way to tell them apart is a screenshot.
+
 **A HAR holds live credentials.** Cookies, tokens, POST bodies. It is evidence you want to keep for re-verification and a secret you must keep out of version control. `derive-client` says the same thing; it is repeated here because a recon report that cites a HAR is exactly where someone commits one.
 
 ## Parallel recon
