@@ -14,20 +14,21 @@ The user asked about supply-chain risk, a recently disclosed npm/PyPI compromise
 
 ## How it works
 
-The IOC pack lives in `iocs.json` — a versioned list of campaigns, each with its persistence paths, payload filenames, payload hashes, C2/typosquat strings, optional-dependency markers, compromised package scopes, and attack windows. The scanner script `scripts/scan.sh` reads that file and runs three phases:
+The IOC pack lives in `iocs.json` — a versioned list of campaigns, each with its persistence paths, payload filenames, payload hashes, C2/typosquat strings, optional-dependency markers, repo-artifact hashes, forged-commit authors, compromised package scopes, and attack windows. The scanner script `scripts/scan.sh` reads that file and runs four phases:
 
 - **Phase A — persistence**: artifacts that survive reboot (LaunchAgent / systemd / Windows Run key / `~/.local/bin` shims, dropper files in `~/.claude/setup.mjs` / `~/.vscode/setup.mjs`, named lock files).
 - **Phase B — code & cache**: package versions present in any `node_modules` under the configured project roots, payload filenames anywhere on disk, malicious commit hashes / typosquat domains / payload SHA256s in lockfiles and source, optionalDependencies entries that resolve to a GitHub git ref (the TeamPCP smuggling pattern).
 - **Phase C — time window**: any file written under any `node_modules` during a campaign's published attack window. A clean Phase C is the strongest single signal a host avoided exposure.
+- **Phase D — repo artifacts & git history**: files the malware plants inside project repos (`.vscode/tasks.json`, `.claude/settings.json`, `setup.mjs` — names too generic for a presence check, so FAIL only on exact SHA256 match against `repo_artifact_hashes`), and commits authored by forged identities from `forged_commit_authors` (the Shai-Hulud 3.0 pattern: `claude <claude@users.noreply.github.com>`) in any git repo under the roots.
 
-Every check is `find` / `grep` / `jq` / `stat` / `shasum`. The scanner never writes to the target machine.
+Every check is `find` / `grep` / `jq` / `stat` / `shasum` / `git log`. The scanner builds shared filesystem inventories once (one walk per artifact class, not one per IOC) and never writes to the target machine outside its `/tmp/supply-chain-audit-*` workdir.
 
 ## Invocation flow
 
 1. Read `iocs.json` to understand the current campaign list. If `--list` is requested, summarize the campaigns and stop.
 2. Determine project roots. Default: `$HOME`, but prefer narrower paths the user mentions (e.g. `~/Clerk`, `~/Programming`). Ask once if ambiguous and >50GB of code is in scope.
 3. Run `bash scripts/scan.sh [root1 root2 ...]`. The script emits a structured markdown report to stdout. Capture it.
-4. Parse the report. Verdict logic: **only FAIL rows count toward POTENTIALLY COMPROMISED**. A FAIL means an unambiguous compromise signal — persistence artifact present, payload filename found, payload SHA256 matched, string IOC in lockfile, optionalDependencies git-ref smuggle, or Phase C time-window hit. Inventory rows ("you have a copy of `@tanstack/query-core` in your tree") are emitted as **REVIEW** and do *not* flip the verdict — having `@tanstack/*` installed in February 2026 says nothing about whether you got the May 2026 malicious versions. Phase C answers that. If FAIL_COUNT > 0 → POTENTIALLY COMPROMISED. Otherwise CLEAN, even if REVIEW > 0.
+4. Parse the report. Verdict logic: **only FAIL rows count toward POTENTIALLY COMPROMISED**. A FAIL means an unambiguous compromise signal — persistence artifact present, payload filename found, payload SHA256 matched, string IOC in lockfile, optionalDependencies git-ref smuggle, repo-artifact hash match, forged-author commit in git history, or Phase C time-window hit. Inventory rows ("you have a copy of `@tanstack/query-core` in your tree") are emitted as **REVIEW** and do *not* flip the verdict — having `@tanstack/*` installed in February 2026 says nothing about whether you got the May 2026 malicious versions. Phase C answers that. If FAIL_COUNT > 0 → POTENTIALLY COMPROMISED. Otherwise CLEAN, even if REVIEW > 0.
 5. Present the report to the user following the output format below.
 
 ## Output format
@@ -51,6 +52,7 @@ ALWAYS use this exact structure:
 - Phase A (persistence): N fail(s)
 - Phase B (code & cache): N fail(s), M review(s)
 - Phase C (time window): N fail(s) — authoritative exposure signal
+- Phase D (repo artifacts & git history): N fail(s)
 - Total: P PASS / F FAIL / R REVIEW / S skipped
 
 ## Next steps
@@ -88,7 +90,7 @@ If the user is reporting a brand-new campaign that isn't in the IOC pack, offer 
 
 ## Hard constraints
 
-- **Read-only.** Allowed tools: `find`, `grep`, `jq`, `stat`, `ls`, `shasum`, `awk`, `sed -n` (print-only), `reg query` (Windows). Forbidden: any redirect that writes outside `/tmp/supply-chain-audit-*` workdir, any package-manager command that resolves dependencies (`npm install`, `pnpm install`, `bun install`), any network call to `api.github.com` or registries.
+- **Read-only.** Allowed tools: `find`, `grep`, `jq`, `stat`, `ls`, `shasum`, `awk`, `sed -n` (print-only), `git log` (local history reads only, never fetch/pull), `reg query` (Windows). Forbidden: any redirect that writes outside `/tmp/supply-chain-audit-*` workdir, any package-manager command that resolves dependencies (`npm install`, `pnpm install`, `bun install`), any network call to `api.github.com` or registries.
 - **No credential touching.** Never read `~/.npmrc`, `~/.ssh/`, `~/.aws/`, or environment variables containing token-like strings. The point is to detect malware, not exfiltrate the user's own secrets while doing so.
 - **No revocation suggestions on FAIL until the dead-man's-switch warning has been delivered.** This is non-negotiable — premature revocation on an infected host wipes `~/`.
 
