@@ -18,8 +18,76 @@
       "references": "URLs to disclosures / postmortems"
     }
   },
-  "version": "2026-05-12",
+  "version": "2026-08-04",
   "campaigns": [
+    {
+      "id": "shai-hulud-3-keyv-aug-2026",
+      "name": "Shai-Hulud 3.0 (keyv/cacheable)",
+      "date": "2026-08-04",
+      "attribution": null,
+      "attack_windows_utc": [
+        {"start": "2026-08-04T09:00:00Z", "end": "2026-08-06T00:00:00Z"}
+      ],
+      "compromised_scopes": [
+        "@cacheable",
+        "@keyv",
+        "@servicetitan",
+        "@nebula.js",
+        "@onereach",
+        "@or-sdk",
+        "@ornikar"
+      ],
+      "compromised_packages": [
+        "keyv",
+        "cacheable",
+        "flat-cache",
+        "file-entry-cache",
+        "cacheable-request",
+        "cache-manager",
+        "ecto",
+        "picasso.js"
+      ],
+      "compromised_pypi": [],
+      "payload_files": ["Math_Symbol.js", "math_init.js"],
+      "payload_hashes_sha256": {
+        "Math_Symbol.js": "9fc2570b7cef51c1b8df116d144d11ff4096357be7d2c4c6367cfc2509cf1bcc",
+        "math_init.js": "9fc2570b7cef51c1b8df116d144d11ff4096357be7d2c4c6367cfc2509cf1bcc",
+        "setup.mjs": "54dc7ea54a1317cca0e890a2770630cf7fa6c97813e0cb9d2caa93012b350668"
+      },
+      "string_iocs": [
+        "npm-cache.com",
+        "pypi-get.com",
+        "js-mirror.com",
+        "Math_Symbol",
+        "math_init",
+        "0xE1f2395ee43e45A1556EC6438a88c31B83493103",
+        "thebeautifulmarchoftime",
+        "Shai-Hulud: Here We Go Again"
+      ],
+      "optional_dependency_iocs": [],
+      "persistence": {
+        "shared": [
+          "~/.claude/setup.mjs",
+          "~/.vscode/setup.mjs",
+          "~/.claude/math_init.js",
+          "/tmp/tmp.dpkg_14527.lock"
+        ]
+      },
+      "dead_mans_switch": {
+        "polls": "https://api.github.com/user",
+        "interval_seconds": null,
+        "trigger": "stolen GitHub PAT returns 401 (revoked); selectively armed per-host based on C2 response",
+        "action": "destructive wipe — same family as May 2026 rm -rf $HOME"
+      },
+      "notes": "ACTIVE at pack time (2026-08-04) — worm was adding 50-100 packages every few minutes; attack window end is provisional, extend as disclosures land. Entry vector: keyv maintainer GitHub account, malicious releases published via legitimate GitHub Actions so packages carry VALID provenance — do not trust provenance alone. preinstall hook `node setup.mjs` (npm 12+ does not run preinstall by default; bun does not run dependency lifecycle scripts unless in trustedDependencies — both block the vector). setup.mjs filename is deliberately NOT in payload_files (too generic, would false-FAIL); any setup.mjs found should be hand-checked against the hash above. Per-project persistence also lands in repo-level .vscode/tasks.json and .claude/settings.json (hashes 927387d0cfac1118df4b383decc2ea6ba49c9d2f98b47098bcbcba1efc026e1f / 14eb4ce01dd4307759887ff819359b70d7d9ff709ecde039a5abc1aac325b128) with forged commits authored `claude <claude@users.noreply.github.com>`, message `chore: update config`. Exfil: public GitHub repos described 'Shai-Hulud: Here We Go Again' (~1300), fallback https://npm-cache.com:443/router, C2 rotation via Ethereum contract 0xE1f2395ee43e45A1556EC6438a88c31B83493103 (selector 0x53ed5143). 428+ packages / 1700+ versions: full list in wiz-sec-public/wiz-research-iocs.",
+      "references": [
+        "https://www.wiz.io/blog/keyv-and-cacheable-npm-supply-chain-attack",
+        "https://www.aikido.dev/blog/keyv-and-friends-compromised-in-npm-supply-chain-attack",
+        "https://research.jfrog.com/post/shai-hulud-is-back-august/",
+        "https://socket.dev/blog/popular-npm-packages-in-the-keyv-and-cacheable-namespaces-compromised-in-active-supply-chain",
+        "https://github.com/wiz-sec-public/wiz-research-iocs"
+      ]
+    },
     {
       "id": "mini-shai-hulud-may-2026",
       "name": "Mini Shai-Hulud (TeamPCP)",
