@@ -2,6 +2,23 @@
 
 Background context for each campaign in `iocs.json`. Read when the user wants to understand *why* a check exists, the technique chain, or the attacker's intent. The scanner does not load this file — it's for human comprehension.
 
+## Shai-Hulud 3.0 (keyv/cacheable) — August 4, 2026
+
+**Attribution.** Unattributed at disclosure time. Reuses the Shai-Hulud worm codebase and branding — exfil repos carry the description "Shai-Hulud: Here We Go Again".
+
+**Scope.** Started with the GitHub account of the maintainer behind `keyv` (~127M weekly downloads) and the `cacheable` family. Within hours: 428+ unique packages across 1,700+ versions, expanding 50–100 packages every few minutes at peak via worm self-propagation. Orgs hit downstream: Deliveroo, OneReach, ServiceTitan, Picsart, Qlik. Primary vectors: `keyv@6.0.0`, `cacheable@2.5.1`, `flat-cache@6.1.24`, `file-entry-cache@11.1.6`, `cache-manager@7.2.10`, `cacheable-request@13.0.20`. Note `flat-cache`/`file-entry-cache` sit in the ESLint dependency tree — near-universal inventory hits; the installed *version* and Phase C decide, not presence.
+
+**Technique chain.**
+
+1. **Maintainer GitHub account takeover.** Malicious commits pushed straight to main; releases published through the projects' own GitHub Actions, so the packages carry **valid provenance**. Provenance is not a trust signal against this class.
+2. **Preinstall execution.** `"preinstall": "node setup.mjs"` added to package.json. On npm ≤11 this runs on install; npm 12+ disables preinstall hooks by default and Bun never runs dependency lifecycle scripts outside `trustedDependencies` — both block the vector.
+3. **Secret harvest.** Sweeps npm tokens (prioritizing `bypass_2fa`), GitHub PATs/OIDC tokens, AWS/GCP/Azure creds, SSH keys, Kubernetes configs, Vault tokens, browser stores, AI tool credentials.
+4. **Agent-aware persistence.** Drops `setup.mjs`/`math_init.js` into `~/.claude/` and `~/.vscode/`, and injects repo-level hooks into `.vscode/tasks.json` and `.claude/settings.json` via forged commits authored `claude <claude@users.noreply.github.com>` with message "chore: update config" — malware camouflaged as agent tooling.
+5. **Resilient C2.** Exfil to public GitHub repos (~1,300 created, Dune-vocabulary names: sardaukar, fremen, atreides, sandworm, melange); fallback `npm-cache.com/router`; C2 domain rotation read from Ethereum contract `0xE1f2395ee43e45A1556EC6438a88c31B83493103` — unkillable by domain takedown.
+6. **Dead-man's-switch, selectively armed.** Monitors `api.github.com/user` with the stolen PAT; revocation triggers destructive response on hosts where C2 armed it. Same rule as May 2026: audit token activity first, rotate from a clean machine, revoke last.
+
+**Why bake-period defeats it.** Same publish-fast/get-yanked economics: any `minimumReleaseAge >= 1d` gate means the malicious versions were pulled before your resolver would accept them.
+
 ## Mini Shai-Hulud (TeamPCP) — May 11–12, 2026
 
 **Attribution.** TeamPCP, the same crew implicated in earlier "TheBeautifulSandsOfTime" intrusions. Linked by Wiz and Socket to the same OPSEC fingerprint (Session messenger drop, GitHub dead-drop repos under disposable accounts).
