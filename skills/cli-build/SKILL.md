@@ -1,16 +1,30 @@
 ---
 name: cli-build
-version: 0.9.1
-description: "Design and build a CLI that an AI agent can operate safely and a human can supervise. Use when the user wants to build a CLI, wrap an API in a command-line tool, add --json or --dry-run to an existing CLI, design a trust ladder or approval gate for risky commands, wrap an async API so agents do not write their own poll loop, or decide how to distribute a CLI (npm, native binary, source). Follows a surface-recon report when one exists."
+version: 0.10.0
+description: "Design and build a CLI that an AI agent can operate safely and a human can supervise. Use when the user wants to build a CLI, wrap an API in a command-line tool, build a CRUD or local-first tool over a database or filesystem the user already owns, add --json or --dry-run to an existing CLI, design a trust ladder or approval gate for risky commands, wrap an async API so agents do not write their own poll loop, or decide how to distribute a CLI (npm, native binary, source). Runs on its own when the contract is yours to define; follows a surface-recon report when the target is someone else's service."
 ---
 
 # cli-build
 
 Build a CLI whose primary user is an agent and whose supervisor is a human. That inverts the usual defaults: machine-readable output is not a flag you add later, prompts are a failure mode in non-interactive contexts, and every write leaves a receipt.
 
-If a `surface-recon` report exists, start from it. If not and the target is a service you have not verified, run `surface-recon` first: building against a guessed API wastes more time than mapping it.
+## Phase 0: where does the contract come from
 
-**Open `friction.md` next to the code before Phase 1 and append as you go.** A block you rejected and why, a convention that turned out wrong for this domain, a reference that was thin. It folds into the case at the end, and it is what corrects this skill: seven claims inherited from an older version were false against the source, and they surfaced only because someone wrote down that they did not match.
+Every command you write reads or mutates something with a shape. This phase names that shape's owner, because it decides whether you go find the contract or write it.
+
+**Discovered.** The CLI wraps a system you do not control: a third-party API, a login-walled portal, a device, an undocumented file format. The contract exists and is unverified, so guessing at it wastes more time than mapping it. **Run `surface-recon` first** and start from its report.
+
+**Defined.** You own the model: CRUD over your own database, a scaffolder, a local transform, a wrapper around a library whose types you already have. There is nothing to reverse-engineer, so `surface-recon` has no input and skipping it costs nothing. **Write the contract instead**, in one pass before Phase 1: the entities, their fields and types, the operations allowed on each, and what makes a write irreversible. That artifact is what a recon report would have given you.
+
+**Mixed.** A CLI over your own database that also calls a payment provider is discovered at the boundary and defined in the middle. Recon only the discovered part; do not let one external call turn the whole build into a recon job.
+
+Say which one this is out loud before Phase 1, and write it into `friction.md`. An unstated classification defaults to discovered, which is how a defined build ends up blocked waiting for a report nobody can produce.
+
+**Done when:** the origin is named, and either a recon report exists or the entities and operations are written down.
+
+**Open `friction.md` next to the code now and append as you go.**
+
+A block you rejected and why, a convention that turned out wrong for this domain, a reference that was thin. It folds into the case at the end, and it is what corrects this skill: seven claims inherited from an older version were false against the source, and they surfaced only because someone wrote down that they did not match.
 
 ## What agent-first actually means
 
@@ -32,7 +46,9 @@ If a `surface-recon` report exists, start from it. If not and the target is a se
 
 **When the API is asynchronous:** `--wait` on every submitting command, backed by a job ledger that survives a killed poll. Handing the poll loop to the caller makes the agent write backoff logic it will get subtly wrong. See [compounding-surface.md](references/compounding-surface.md).
 
-**Size the friction to the damage.** A read-only CLI over a public dataset earns `--json` and a `schema` command, and stops there: nobody loses anything by running the query twice. Intent tokens are for a wrong call that costs money. Ask what a wrong call would cost, then choose. See [trust-ladder-patterns.md](references/trust-ladder-patterns.md).
+**Size the friction to the damage, and "none" is a real size.** Ask what one wrong call costs, then choose. A read-only CLI over a public dataset earns `--json` and a `schema` command and stops there: nobody loses anything by running the query twice. Intent tokens are for a wrong call that costs money. Adopting the full ladder for a tool that cannot hurt anyone is not caution, it is a tax the agent pays on every invocation, and it trains the human to approve without reading.
+
+The question is damage, not distance. A `delete` against your own local database is irreversible even with no network, no money, and no third party in sight, so it earns `--dry-run` and a confirmation on the destructive verbs while the reads next to it earn nothing. Writes you can undo from a backup you actually have earn less. Grade the commands, not the project. See [trust-ladder-patterns.md](references/trust-ladder-patterns.md).
 
 ## Phase 1: decide the distribution target first
 
@@ -91,7 +107,9 @@ If you are not in a TypeScript project, or the install path does not fit, read t
 
 ## Phase 4: safety, sized to the damage
 
-Read [trust-ladder-patterns.md](references/trust-ladder-patterns.md) and pick a shape. Three materially different ones exist in real code, and the right choice depends on the domain rather than on fashion.
+First, the exit: if no command in the surface can lose data, spend money, or touch a third party, this phase is one line in `friction.md` naming that fact, and you move on. A CLI that only reads, or only writes files it can rewrite, has nothing to gate. Record the finding so the next reader knows it was decided rather than skipped.
+
+Otherwise read [trust-ladder-patterns.md](references/trust-ladder-patterns.md) and pick a shape. Three materially different ones exist in real code, and the right choice depends on the domain rather than on fashion.
 
 Non-negotiables when the domain has consequences:
 
@@ -103,7 +121,7 @@ Non-negotiables when the domain has consequences:
 
 **Validate what came back before acting on it.** One corpus CLI refuses to submit unless the provider's preview screen literally contains the expected name, amount, and currency. That check catches both provider bugs and your own bad request construction.
 
-**Done when:** every mutating command has a trust level, and the ladder shape is chosen from the domain rather than copied.
+**Done when:** every mutating command has a trust level and the ladder shape is chosen from the domain rather than copied, or `friction.md` records that no command in the surface carries consequence.
 
 **Treat third-party response text as untrusted input.** Free-text from an external API can carry prompt injection aimed at the agent reading your output. Escape it before it reaches any place where it reads as instruction.
 
@@ -153,7 +171,7 @@ This is the part everyone skips, and skipping it is why the same lessons get red
 
 ## References
 
-- [cligentic-blocks.md](references/cligentic-blocks.md): the 23 blocks, and when not to adopt one
+- [cligentic-blocks.md](references/cligentic-blocks.md): the 24 blocks, and when not to adopt one
 - [trust-ladder-patterns.md](references/trust-ladder-patterns.md): three real shapes, chosen by domain
 - [json-contract.md](references/json-contract.md): output mode, TTY detection, NDJSON as actually implemented
 - [audit-log-patterns.md](references/audit-log-patterns.md): two-phase writes, and the dead-code trap

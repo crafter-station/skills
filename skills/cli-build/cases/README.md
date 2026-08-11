@@ -17,8 +17,9 @@ Create `cases/{cli-name}.md` when a build ends: shipped, abandoned, or paused. A
 ```markdown
 ---
 cli: {name}
-target: {what it wraps}
-terrain: {A-G, from surface-recon}
+target: {what it wraps, or what it owns}
+origin: {discovered|defined|mixed}
+terrain: {A-G, from surface-recon; omit when origin is defined}
 built: {date}
 status: {shipped|internal|abandoned}
 distribution: {source|npm|native|none}
@@ -29,9 +30,10 @@ distribution: {source|npm|native|none}
 ## What it does
 {One or two sentences.}
 
-## Recon
-{Link to the recon report. What the terrain turned out to be, and
-whether the initial classification was right.}
+## Contract origin
+{Discovered: link the recon report, what the terrain turned out to be,
+and whether the initial classification was right. Defined: the entities
+and operations, and which of them the build turned out to have wrong.}
 
 ## Distribution choice
 {Which target, and why. What the audience actually was.}
