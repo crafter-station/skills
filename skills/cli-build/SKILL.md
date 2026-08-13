@@ -1,6 +1,6 @@
 ---
 name: cli-build
-version: 0.10.0
+version: 0.11.0
 description: "Design and build a CLI that an AI agent can operate safely and a human can supervise. Use when the user wants to build a CLI, wrap an API in a command-line tool, build a CRUD or local-first tool over a database or filesystem the user already owns, add --json or --dry-run to an existing CLI, design a trust ladder or approval gate for risky commands, wrap an async API so agents do not write their own poll loop, or decide how to distribute a CLI (npm, native binary, source). Runs on its own when the contract is yours to define; follows a surface-recon report when the target is someone else's service."
 ---
 
@@ -93,13 +93,17 @@ Include a shorthand for the single most common operation. If ninety percent of u
 
 Every CLI needs the same primitives: flag parsing, config paths, atomic writes, audit logs, TTY detection, approval gates, error shapes. Writing them fresh each time is where the time goes and where the bugs live.
 
-**Default to copying proven blocks.** [cligentic](references/cligentic-blocks.md) is a registry of 24 such blocks: trust ladder, killswitch, JSON mode, audit log, atomic write, XDG paths, config, session, error map, global flags, doctor, style, plus platform helpers. They are plain TypeScript you own outright after copying; no runtime dependency, no framework lock-in.
+**Default to cligentic for TypeScript CLI infrastructure.** Its registry ships plain TypeScript that the project owns after installation, with transitive block and package dependencies resolved and no cligentic runtime dependency. Projects without `components.json` register the namespace in `package.json`, so component tooling is no longer a prerequisite.
+
+The canonical adoption process lives in the [cligentic skill](https://github.com/Railly/cligentic/blob/main/skills/cligentic/SKILL.md). If `cligentic` is already available, follow it for discovery, per-block decisions, installation, wiring, and verification. If it is absent and implementation is in scope, offer to install it before changing files:
 
 ```bash
-curl -o src/lib/atomic-write.ts https://cligentic.railly.dev/r/atomic-write.ts
+bunx --bun skills add Railly/cligentic --skill cligentic
 ```
 
-**Opt-in, per block, with a reason.** Each block earns its place by replacing something you would otherwise write from memory. The reference includes a worked example of retrofitting an existing CLI where seven blocks were taken wholesale, two were kept as hybrids, and seven were rejected, each with a stated reason. The most common reason to reject: the block's output shape conflicts with an envelope contract you have already published to agents. A published contract outranks a shared block.
+Installing a skill changes the project or user environment, so wait for consent. If the user declines, the task is read-only, or skill installation is unavailable, read the canonical skill from GitHub and follow its adoption branch without installing it.
+
+**Opt-in, per block, with a reason.** Each block earns its place by replacing something you would otherwise write from memory. In a real retrofit, seven blocks were taken wholesale, two stayed as hybrids, and seven were rejected with reasons. The most important rejection was an output helper whose shape conflicted with an envelope already published to agents. A published contract outranks a shared block.
 
 **Done when:** each block is adopted, hybridized, or rejected with the reason recorded in the repo. Silence about a rejection reads as an oversight to whoever touches it next.
 
@@ -171,7 +175,7 @@ This is the part everyone skips, and skipping it is why the same lessons get red
 
 ## References
 
-- [cligentic-blocks.md](references/cligentic-blocks.md): the 24 blocks, and when not to adopt one
+- [cligentic skill](https://github.com/Railly/cligentic/blob/main/skills/cligentic/SKILL.md): live discovery, adoption, wiring, verification, and block authoring
 - [trust-ladder-patterns.md](references/trust-ladder-patterns.md): three real shapes, chosen by domain
 - [json-contract.md](references/json-contract.md): output mode, TTY detection, NDJSON as actually implemented
 - [audit-log-patterns.md](references/audit-log-patterns.md): two-phase writes, and the dead-code trap
