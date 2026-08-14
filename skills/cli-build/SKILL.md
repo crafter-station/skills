@@ -1,6 +1,6 @@
 ---
 name: cli-build
-version: 0.11.0
+version: 0.12.0
 description: "Design and build a CLI that an AI agent can operate safely and a human can supervise. Use when the user wants to build a CLI, wrap an API in a command-line tool, build a CRUD or local-first tool over a database or filesystem the user already owns, add --json or --dry-run to an existing CLI, design a trust ladder or approval gate for risky commands, wrap an async API so agents do not write their own poll loop, or decide how to distribute a CLI (npm, native binary, source). Runs on its own when the contract is yours to define; follows a surface-recon report when the target is someone else's service."
 ---
 
@@ -89,6 +89,8 @@ Include a shorthand for the single most common operation. If ninety percent of u
 
 **Shape the human view separately.** The machine mode returns everything because the agent filters; the human mode returns what a person asked for. Building one output for both serves neither. Everything about legibility, which metric direction a reader assumes, where a scale's thresholds go, when repetition is a heading, is in [human-output.md](references/human-output.md). This skill's other gates cannot catch an unreadable table: the first CLI built with it passed every one of them and printed 275 rows for someone who asked what was playing that evening.
 
+**Polished human output is the default scope.** Unless the user explicitly asks for an MVP, minimal, headless, or machine-only CLI, include visual hierarchy, semantic color, readable tables, progress for work that takes time, and a TTY-only banner when the command has a human-facing surface. A small command count is not a reason to ship plain output. It is only a reason to keep the presentation compact.
+
 ## Phase 3: assemble from proven blocks
 
 Every CLI needs the same primitives: flag parsing, config paths, atomic writes, audit logs, TTY detection, approval gates, error shapes. Writing them fresh each time is where the time goes and where the bugs live.
@@ -103,7 +105,7 @@ bunx --bun skills add Railly/cligentic --skill cligentic
 
 Installing a skill changes the project or user environment, so wait for consent. If the user declines, the task is read-only, or skill installation is unavailable, read the canonical skill from GitHub and follow its adoption branch without installing it.
 
-**Opt-in, per block, with a reason.** Each block earns its place by replacing something you would otherwise write from memory. In a real retrofit, seven blocks were taken wholesale, two stayed as hybrids, and seven were rejected with reasons. The most important rejection was an output helper whose shape conflicted with an envelope already published to agents. A published contract outranks a shared block.
+**Opt-in, per block, with a reason.** Each block earns its place by replacing something you would otherwise write from memory. For a human-facing TypeScript CLI, `detect`, `style`, and `banner` are the default presentation set unless the user reduced the scope explicitly. In a real retrofit, seven blocks were taken wholesale, two stayed as hybrids, and seven were rejected with reasons. The most important rejection was an output helper whose shape conflicted with an envelope already published to agents. A published contract outranks a shared block.
 
 **Done when:** each block is adopted, hybridized, or rejected with the reason recorded in the repo. Silence about a rejection reads as an oversight to whoever touches it next.
 
@@ -156,6 +158,14 @@ which mycli && mycli --help
 Running `bun run src/cli.ts` verifies a file. Running `mycli` verifies what ships: the bin entry, the shebang, the resolved dependencies, the banner. Three of those are invisible from a source-file invocation, and a broken `bin` path reaches a user's first install.
 
 **Definition of done is observed behavior.** Run the command, read the output, and read it twice: once for correctness, once as someone who does not know the domain. What does the biggest number mean, what does the eye land on first, is there a column where every row says the same thing. See [human-output.md](references/human-output.md).
+
+For a human-facing CLI, inspect the real TTY path and verify all of these before calling it done:
+
+- the banner and diagnostics stay on stderr, while machine data stays on stdout;
+- `--json`, piped output, and other machine modes contain no ANSI escapes;
+- `NO_COLOR` disables styling without changing content;
+- colored columns remain aligned using visible width rather than string length;
+- long operations report real progress from completed work, not a timer animation.
 
 **Verifying a new feature probes the old ones sharing its stream.** Confirming a fresh banner kept stdout clean turned up 810 bytes there, none of it the banner: a bare invoke had been writing help text to stdout with a nonzero exit since the previous round. Nobody had looked because bare invoke is not a case people test.
 

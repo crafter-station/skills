@@ -6,6 +6,20 @@ Worth naming the gap that produced it: the first CLI built with this skill passe
 
 These came from watching real output in a terminal and hearing which parts were hard to read.
 
+## Default scope
+
+Treat polished human output as part of the product unless the user explicitly asks for an MVP, minimal, headless, or machine-only CLI. Do not infer reduced scope from a small number of commands. A two-command tool can still feel unfinished when it has no hierarchy, no progress, and no distinction between success, warning, error, and context.
+
+The default human surface includes:
+
+- a compact TTY-only banner when the CLI has an interactive entry point;
+- semantic color and emphasis with a clear visual hierarchy;
+- readable tables that remain aligned after styling;
+- real progress for operations whose completion can be measured;
+- plain output under `NO_COLOR`, pipes, and machine modes.
+
+This is a presentation default, not permission to add every safety mechanism. Safety remains proportional to damage. Human output remains separate from the stable machine contract.
+
 ## The number must mean what the eye assumes
 
 An upstream exposed *available* seats. Printed as-is, a nearly empty room showed `98.8%` and a full one `25.9%`. Correct, and read backwards by everyone, because a high percentage next to a resource name reads as "full".
@@ -98,11 +112,10 @@ The two modes diverge on purpose: the agent gets everything and filters, the hum
 
 ## Color, emphasis, and aligned columns
 
-Take the `style` block rather than writing this. The colors are the easy part; what gets written wrong is the width.
+For a human-facing TypeScript CLI, adopt Cligentic's `detect`, `style`, and `banner` blocks by default. The colors are the easy part; what gets written wrong is the width and the stream boundary. Follow the canonical Cligentic skill for installation and transitive dependencies.
 
 ```bash
-curl -o src/platform/style.ts https://cligentic.railly.dev/r/style.ts
-curl -o src/platform/detect.ts https://cligentic.railly.dev/r/detect.ts
+bunx --bun skills add Railly/cligentic --skill cligentic
 ```
 
 `"\x1b[1mHi\x1b[0m".length` is 12 and its width on screen is 2, so any column alignment using `.length` on styled text is off by the size of the escapes. The block ships `visibleWidth`, `padVisible`, `padStartVisible`, and `truncateVisible` for exactly that, plus `bold`, `dim`, `italic`, `underline` and a 256-color semantic set (`danger`, `warn`, `ok`, `info`, `muted`).
@@ -145,6 +158,10 @@ And every rule above still applies underneath. A colored column that reads backw
 That is why alignment bugs survive tests: the escape sequences that break column math are never in the string being asserted. To test alignment, inject the escapes into the fixture by hand, or assert on `visibleWidth` rather than `.length`.
 
 Same family as a test that only passes valid input: it cannot fail in the way the code fails.
+
+The acceptance path therefore needs a forced-color fixture or a real TTY smoke. Also assert that JSON and piped output contain no ANSI, `NO_COLOR` preserves the words while removing styling, and the banner writes only to stderr.
+
+Progress has the same trap. A spinner driven only by time can look active while reporting nothing about completion. When bytes, rows, files, or jobs are measurable, render progress from the real completed amount.
 
 ## The check this file adds
 

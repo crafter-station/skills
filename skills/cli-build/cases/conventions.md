@@ -50,6 +50,9 @@ Live operations require a passing preflight check no older than a bounded window
 ### Write the accept/reject decision down when adopting shared blocks
 Seven blocks taken wholesale, two kept as hybrids, seven rejected with stated reasons. The rejections are the valuable part. The strongest one: the CLI had already published an envelope contract to agents that the shared block's output shape would have broken. A published contract outranks a shared block.
 
+### Polished human output is the default unless scope is explicitly reduced
+One build passed its agent, safety, packaging, and live-device checks while still feeling visibly unfinished. The cause was rejecting `banner` and `style` only because the command surface was small. Adding a TTY-only banner, semantic color, ANSI-safe tables, readable metadata, and byte-level progress fixed the human surface without changing the machine contract. Keep this single-source until another independent build confirms it.
+
 ---
 
 ## Contradicted: do not follow
