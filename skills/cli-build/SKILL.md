@@ -37,6 +37,12 @@ A block you rejected and why, a convention that turned out wrong for this domain
 - **Data on stdout, diagnostics on stderr, always.** Including the banner, which is why `banner` is a block and not a `console.log`.
 - **A secret read from the terminal never echoes**, and returns `null` with no TTY rather than hanging. That is `prompt-secret`.
 
+Those are now enforced as tests rather than trusted as prose, in the `surfacer` repository, which compiles CLIs from a recon descriptor. Each test names the rule it checks so the two read together.
+
+It is worth knowing what that exercise found, because the same shape is likely wherever this list is only written down. Encoding the rules against the generator caught three violations, including the two most valuable defaults here. Then applying the identical list to the generator's own CLI caught four more, in the tool that had just been taught to enforce them. A compiler that emits agent-first CLIs while not being one is the easiest version of this to miss, because every test was passing and every test was pointed at the output.
+
+So the list binds twice, and the tests live in two files only because a test cannot invoke a binary from another crate: `crates/surfacer-emit-cli/tests/agent_first_rules.rs` for what is generated, `crates/surfacer-app/tests/agent_first_rules.rs` for the tool doing the generating. If you build a tool that produces CLIs, check the producer against this list too. Prose does not fail a build, and a rule you enforce on others is the one you stop checking on yourself.
+
 **When the domain has real consequences** (money, irreversible writes, third-party side effects, personal data):
 
 - A trust ladder classifying commands by risk.
