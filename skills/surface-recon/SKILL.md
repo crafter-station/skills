@@ -1,6 +1,6 @@
 ---
 name: surface-recon
-version: 0.6.0
+version: 0.7.0
 description: "Map what a target exposes and produce a recon report an implementer can build from. Works on web services and APIs, login-walled portals, desktop apps and compiled binaries, file formats, and hardware or accelerators whose real constraints are undocumented. Use when the user says 'recon this', 'reverse engineer this', 'map this API', 'figure out their endpoints', 'what does this device actually support', 'I want to build a CLI/client for X', or pastes a URL and asks what it exposes. Also use before building any integration against something whose contract you have not verified."
 allowed-tools: Bash(agent-browser:*), Bash(npx agent-browser:*)
 ---
@@ -123,13 +123,19 @@ Beware of large artifacts. A single minified file can be megabytes on one line; 
 
 **Done when:** every unexplained request from Phase 2 is either resolved or listed under "Needs verification". A signing algorithm counts as resolved only after a replay outside the browser succeeds.
 
-## Phase 4: write the report
+## Phase 4: write the outputs
 
 Write to the path the user asks for. Absent one, ask once, then default to `./recon/` in the current project.
 
-The template, including the per-terrain variants for a file format and for hardware, is in [report-template.md](references/report-template.md).
+**The report** is the deliverable every recon produces. The template, including the per-terrain variants for a file format and for hardware, is in [report-template.md](references/report-template.md).
 
-**Done when:** every row of the endpoint table carries observed or inferred, every blocker names what got past it or that nothing did, and every "Needs verification" item names the step that would confirm it. Run [gates.md](references/gates.md) against the finished draft.
+**The IR** is a second artifact, written when the target has an HTTP surface and the verdict is "build it" or "build it narrowly". `surfacer` is a compiler that reads one `.surfacer.json` descriptor and emits six interfaces from it (a Rust shim, just-bash, help text, a TypeScript CLI, OpenAPI 3.1, and an MCP server) and does no recon of its own, so this skill is the producer of that file. Same findings, shaped for a machine instead of a reader.
+
+The rule that governs it is the skill's own, made stricter: **only what you observed goes in the IR.** The report can carry inference because it has a column saying so; the IR has no such column, and everything in it is read as fact by six emitters and by `surfacer check`, which re-probes endpoints from the IR to detect drift. An inferred path there makes the drift check fire on something that never existed. Inference and "Needs verification" stay in the markdown.
+
+The full field-by-field mapping, which terrains produce an IR and which cannot, and how the two runs from Phase 2 fill the `varies` and `observations` fields on parameters, are in [ir-target.md](references/ir-target.md).
+
+**Done when:** every row of the endpoint table carries observed or inferred, every blocker names what got past it or that nothing did, and every "Needs verification" item names the step that would confirm it. Run [gates.md](references/gates.md) against the finished draft. If an IR was written, `surfacer lint recon/{siteName}.surfacer.json` passes and its endpoint count matches the observed rows of the report.
 
 ## Phase 5: verdict
 
@@ -151,12 +157,13 @@ State the maintenance risk plainly. An undocumented endpoint has no contract and
 - [anti-bot.md](references/anti-bot.md): what blocks recon and what gets through
 - [agent-browser-recon.md](references/agent-browser-recon.md): interception, client state, React trees, desktop apps, session persistence
 - [report-template.md](references/report-template.md): the report shape, with per-terrain variants
+- [ir-target.md](references/ir-target.md): the surfacer IR contract, field by field, and which terrains can produce one
 - [gates.md](references/gates.md): when to stop, and what to check before claiming a finding
 - [friction-log.md](references/friction-log.md): capturing where the skill itself slowed you down
 
 ## Boundaries
 
-**Stop at the report.** Command design and implementation are `cli-build`'s work; recon's product is the verdict.
+**Stop at the report and the IR.** Implementation is `cli-build`'s work; recon's product is the verdict and, when there is a surface to compile, the descriptor of what was observed. The IR names commands because `lint_ir` demands a unique `commandPath` per operation, and that naming follows `cli-build`'s noun-verb convention rather than inventing a second one.
 
 **Report the rate limit you measured.** "No limit headers observed, not measured" is a complete answer.
 

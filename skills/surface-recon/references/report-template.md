@@ -8,7 +8,7 @@ type: surface-recon
 target: {url or name}
 created: {date}
 terrain: {A-H}
-auth: {none|api-key|cookie|oauth|jwt|hmac|certificate}
+auth: {none|api-key|oauth2|browser-bootstrapped-token|cookie|jwt|hmac|certificate}
 official-api: {yes|partial|no}
 confidence: {high|medium|low}
 ---
@@ -24,6 +24,12 @@ confidence: {high|medium|low}
 ## Authentication
 {The exact flow, step by step. Header names and formats. Token lifetime.
 Rotation behavior. Second factors. What you OBSERVED vs what you inferred.}
+
+{The first four frontmatter values match the IR's four auth modes, so a report
+that will also produce an IR should prefer them. The rest describe a flow the
+IR has no mode for, which is worth stating plainly in this section: the report
+can describe an auth scheme the IR cannot carry, and an implementer needs to
+know which side of that line the target falls on. See ir-target.md.}
 
 ## Endpoints
 
