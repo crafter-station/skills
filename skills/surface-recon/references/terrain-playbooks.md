@@ -79,9 +79,9 @@ When GraphQL introspection is disabled (403 on `__schema`), the schema is still 
 
 Steps that repeatedly worked:
 
-1. Log in headed. Use the credential vault rather than the command line, so the password never lands in shell history: `agent-browser auth save <name> --url <login> --username <u> --password-stdin`, then `auth login <name>`. Capture the cookie name and shape.
+1. Log in headed, with a real browser profile — `agent-browser`'s own bundled browser can be fingerprinted and blocked the same as headless on some targets (see [anti-bot.md](anti-bot.md)). Use the credential vault rather than the command line, so the password never lands in shell history: `agent-browser auth save <name> --url <login> --username <u> --password-stdin`, then `auth login <name>`. Capture the cookie name and shape.
 2. Look for a CSRF or session token in the DOM. Some frameworks put it in a global JS object or a meta tag, and it changes on every login: plan to re-extract it rather than cache it.
-3. Watch the XHR the page fires. Those are your endpoints.
+3. Watch the XHR the page fires. Those are your endpoints — unless login is a native `<form>` submit, invisible to `fetch`/`XHR` instrumentation entirely.
 4. For pages with no XHR, parse the HTML. `cheerio` over a fetched page is stable enough when the markup is server-rendered and old.
 5. Check what an unauthenticated deep link does. The redirect target is your "am I logged in" signal.
 6. Persist the session with `--session` plus `--restore` so a recon spanning many commands does not re-login each time. On a portal with a captcha this is the difference between feasible and not.
@@ -92,6 +92,8 @@ Steps that repeatedly worked:
 - **Data you need may not be in the HTML at all.** One video platform exposed only the currently-loaded item's ID in the DOM; getting the rest required clicking each playlist entry headed and capturing the change. Static scraping could never have found them.
 - **Names lie.** One endpoint named after a specific cloud provider served a completely different provider's blob storage, left over from a migration nobody renamed around. Do not infer the backend from the route name; read the response headers.
 - **Encoding details are load-bearing.** One parameter needed double URL-encoding; single-encoding worked most of the time and failed silently the rest. Replicate exactly what the browser sent.
+- **A login that crosses a subdomain can vanish from capture entirely.** One portal's real login was a native `<form>` submit that redirected to a different subdomain: invisible to `fetch`/`XHR` instrumentation, and the passive network tool cleared its buffer at the domain boundary too. Nothing captured the request except DevTools with "Preserve log" enabled, read by hand.
+- **Never ask for the full DevTools payload.** Ask for the specific field you need — status, `Location`, `Content-Type`. Asked to compare payloads, a user pasted the whole body verbatim, password field included, twice in one project through the same shortcut. Redact before it lands in any transcript.
 
 ---
 
