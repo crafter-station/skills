@@ -4,11 +4,18 @@
 # Emits facts, never a score. Every check prints one line:
 #   PASS <id> <evidence>
 #   FAIL <id> <evidence>
+#   SEMI <id> <observation>     observed, but the verdict needs a reader
 #   NA   <id> <reason>          check does not apply to this target
 #   SKIP <id> <reason>          check applies but could not be run here
 #
 # A FAIL is a fact that a reader turns into a finding. Nothing here weighs,
 # ranks, or totals: the thresholds that would do so have no source.
+#
+# SEMI exists because two checks observe something real whose meaning depends
+# on intent the script cannot read. Reporting those as FAIL called a corpus
+# CLI's documented headline feature a defect. A status that admits the limit
+# beats a verdict that is confidently wrong, and SEMI is excluded from any
+# pass/applicable ratio for the same reason.
 
 set -uo pipefail
 
@@ -592,12 +599,14 @@ else
 		if [ "$usr_code" -ne 0 ]; then
 			emit PASS exit-codes-meaningful "unknown command exits $usr_code; separating user error from system failure needs a forced system fault, not probed here"
 		elif [ -s "$TMP/unknown.out" ]; then
-			# Exiting 0 is the symptom. The cause, in every corpus instance, was
-			# an unknown argument absorbed as INPUT: one CLI sent it to a remote
-			# API as a prompt, another answered `success: true` for a product
-			# search. Naming only the exit code understates it, and the reader
-			# needs the output to see which they have.
-			emit FAIL exit-codes-meaningful "unknown command exited 0 and produced $(wc -c <"$TMP/unknown.out" | tr -d ' ') bytes on stdout; the argument was absorbed as input rather than rejected, so a typo reads as a successful run"
+			# Exiting 0 with output means the argument was absorbed as INPUT
+			# rather than rejected. That is a defect when the CLI has no such
+			# shorthand, and it is the product when it does: one corpus CLI
+			# routes a bare word to a generate command on purpose, documented
+			# in --help and commented at the call site. The check cannot tell
+			# those apart, so it reports the observation and says so rather
+			# than calling a deliberate design a failure.
+			emit SEMI exit-codes-meaningful "unknown command exited 0 and wrote $(wc -c <"$TMP/unknown.out" | tr -d ' ') bytes to stdout; the argument was absorbed as input. Read --help: a documented bare-word shorthand makes this the design, its absence makes it a typo that reads as a successful run"
 		else
 			emit FAIL exit-codes-meaningful "unknown command exited 0 with empty stdout; success and user error are indistinguishable"
 		fi
