@@ -76,12 +76,49 @@ One build implements T0 through T5, splitting the top tiers by transaction magni
 
 ---
 
+## Measured adoption
+
+Every entry above records that a convention *converged*, which is evidence it is right. None records how often it is actually followed, which is a different question and the one that says where a build is likely to go wrong.
+
+Measured 2026-08-25 by running `cli-audit` over nine CLIs from one portfolio (butaca, candyho, hapi-cli, mothball, radius, spoti-cli, sunat-cli, v0-cli, vcut). One portfolio is not the world, and these are not independent builds the way the convergence entries are: they share an author. Read them as "where this list is hardest to follow," not as a general adoption rate.
+
+### The most valuable default is the least kept
+
+**Non-TTY implies machine-readable output fails in 8 of 9.** The failures are two different problems and the fix differs:
+
+- Three CLIs never check TTY at all, so piped output is a human table and an agent capturing stdout gets ANSI.
+- Five check it in more than one place, from one site to seven. The rule exists and drifts.
+
+Only one resolves it in a dedicated module. Given this is the convention three independent builds arrived at on their own, "converged" and "consistently implemented" are clearly not the same property.
+
+### The `schema` command is adopted less than half the time, and versioned less than a quarter
+
+**Absent in 5 of 9. Of the 4 that have it, 2 carry no version field.** Two of nine expose a versioned machine contract.
+
+This reproduces the corpus finding exactly, which is the useful part: the gap is not a quirk of the CLIs this file was written from. A convention can be named the highest-value one in a skill and still lose to the fact that nothing fails a build when it is missing.
+
+### Declared safety is always wired, in this portfolio
+
+**`--dry-run`, the audit log, and the killswitch pass every applicable check across all nine.** Not one instance of the scaffolded-but-never-wired shape listed below under anti-patterns.
+
+Worth stating because it came from checks that found nothing, which is the only way to learn it, and because it bounds that anti-pattern: it is real in published packages, and absent where someone applied this list while building. Where safety got named, it got wired.
+
+### `nextSteps` tracks human polish, not agent-first intent
+
+**Fails in 6 of 9.** The three that pass are also the three with the most developed human output. The convention appears to get added by whoever is already thinking about the reader, rather than as a deliberate agent-first move, which suggests where to put the reminder.
+
+---
+
 ## Anti-patterns observed in shipped code
 
 All of these are live in published packages, not historical.
 
 ### Scaffolded safety that is never wired
 An audit-log module imported and never called. `--dry-run` parsed into a flags object no command reads. `--help` advertises both. Worse than absent, because the operator stops watching. **Check: grep for the call site. If the only hit is the definition, the feature does not exist.**
+
+Bounded by measurement (see above): zero instances across nine CLIs built with this list. It is a real defect in published packages and it does not survive someone applying this file. The grep stays cheap enough to keep running.
+
+One caution learned running that check at scale: resolve the feature by reading its module's exports, never by guessing likely function names. Guessing `appendAudit|writeAudit|auditLog` reported "no audit log in this CLI" against a CLI whose writer is called `audit()` with 41 call sites, and the widened guess then missed another CLI's `auditPending`/`auditResolve`. A check that announces a feature is absent when it merely could not see it is worse than no check, because a reader takes it as a decided fact.
 
 ### Published with zero tests
 Two packages, both installable. Minimum bar: auth flow, JSON contract per command, any signing code.

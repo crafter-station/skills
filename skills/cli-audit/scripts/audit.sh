@@ -144,10 +144,18 @@ else
 		fmt_files="$(printf '%s\n' "$fmt_hits" | cut -d: -f1 | sort -u)"
 		fmt_n="$(printf '%s\n' "$fmt_files" | wc -l | tr -d ' ')"
 		short="$(printf '%s\n' "$fmt_files" | sed "s|^$REPO/||" | tr '\n' ' ')"
-		if [ "$fmt_n" -eq 1 ]; then
-			emit PASS nontty-implies-json "format resolved in one place: $short"
+		# A module whose job IS the detection (detect, format, output, mode) is
+		# the centralization, not evidence against it. Counting it as drift made
+		# this check fail on 11 of 12 corpus CLIs, including one that resolves
+		# the mode correctly, and a check that fails on almost everything stops
+		# being read. What matters is how many places decide it independently of
+		# that module.
+		callers="$(printf '%s\n' "$fmt_files" | grep -vE '/(detect|format|output|mode|render)[^/]*\.(ts|js|mjs)$' || true)"
+		caller_n="$(printf '%s\n' "$callers" | grep -c . || true)"
+		if [ "$fmt_n" -eq 1 ] || [ "${caller_n:-0}" -eq 0 ]; then
+			emit PASS nontty-implies-json "format resolved in a dedicated module: $short"
 		else
-			emit FAIL nontty-implies-json "output format decided from isTTY in $fmt_n files ($short); a per-command check drifts and the command that forgets is the one an agent hits"
+			emit FAIL nontty-implies-json "output format decided from isTTY in $caller_n place(s) outside a detection module ($(printf '%s\n' "$callers" | sed "s|^$REPO/||" | tr '\n' ' ')); a per-command check drifts and the command that forgets is the one an agent hits"
 		fi
 	fi
 fi
