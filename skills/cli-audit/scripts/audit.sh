@@ -144,7 +144,11 @@ tty_hits="$(sgrep 'stdout\.isTTY|isatty' 2>/dev/null || true)"
 if [ -z "$tty_hits" ]; then
 	emit FAIL nontty-implies-json "no stdout.isTTY check in source; piped output will not be machine-readable"
 else
-	fmt_hits="$(printf '%s\n' "$tty_hits" | grep -E 'format|json|table|output|resolved' || true)"
+	# Keep the lines that decide FORMAT. A line naming what it gates instead
+	# (canPrompt, confirm, interactive) is answering a different question, even
+	# when `format` appears in the same expression.
+	fmt_hits="$(printf '%s\n' "$tty_hits" | grep -E 'format|json|table|output|resolved' |
+		grep -vE 'canPrompt|prompt|confirm|interactive|installSkill' || true)"
 	if [ -z "$fmt_hits" ]; then
 		emit FAIL nontty-implies-json "isTTY is read, but never to decide output format; piped output will not be machine-readable"
 	else
@@ -191,12 +195,17 @@ else
 	emit NA schema-has-version "no schema command to carry a version"
 fi
 
-# A6  nextSteps in structured output.
-if hits="$(sgrep 'nextSteps|next_steps' 2>/dev/null)" && [ -n "$hits" ]; then
+# A6  A next-step hint in structured output.
+#
+#     Match the concept, not one spelling. A CLI shipping `emitNextSteps` and
+#     a `type: "next-step"` NDJSON line was reported as having none, because
+#     the probe looked for the literal `nextSteps`. Fourth time in this script
+#     that guessing an identifier produced a false absence.
+if hits="$(sgrep 'nextSteps|next_steps|next-step|NextSteps' 2>/dev/null)" && [ -n "$hits" ]; then
 	n="$(printf '%s\n' "$hits" | cut -d: -f1 | sort -u | wc -l | tr -d ' ')"
-	emit PASS next-steps-present "nextSteps in $n file(s)"
+	emit PASS next-steps-present "next-step hints in $n file(s)"
 else
-	emit FAIL next-steps-present "no nextSteps in structured output; agents flail without a stated next move"
+	emit FAIL next-steps-present "no next-step hint in structured output; agents flail without a stated next move"
 fi
 
 # A6b No prompt may block a non-interactive run.
@@ -217,7 +226,11 @@ else
 	unguarded=""
 	while IFS= read -r f; do
 		[ -n "$f" ] || continue
-		if ! grep -qE 'isTTY|isatty|nonInteractive|non-interactive|process\.stdin\.isTTY|\bCI\b' "$f" 2>/dev/null; then
+		# The guard may arrive as a parameter rather than be read in this file,
+		# and a well-named one says what it decides: a CLI that renamed its
+		# `isTTY` flag to `canPrompt` was reported as having an unguarded
+		# prompt, when the rename had made the guard clearer.
+		if ! grep -qE 'isTTY|isatty|nonInteractive|non-interactive|canPrompt|interactive|\bCI\b' "$f" 2>/dev/null; then
 			unguarded="$unguarded $(printf '%s' "$f" | sed "s|^$REPO/||")"
 		fi
 	done <<<"$prompt_files"
