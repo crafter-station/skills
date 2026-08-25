@@ -587,12 +587,19 @@ else
 		#      An agent that cannot tell them apart retries the one that will
 		#      fail the same way forever. Sourced from surfacer's
 		#      `user_error_and_system_error_have_different_exit_codes`.
-		"$BIN" __nosuchcommand__ >/dev/null 2>&1
+		"$BIN" __nosuchcommand__ >"$TMP/unknown.out" 2>/dev/null
 		usr_code=$?
-		if [ "$usr_code" -eq 0 ]; then
-			emit FAIL exit-codes-meaningful "an unknown command exited 0; success and user error are indistinguishable"
+		if [ "$usr_code" -ne 0 ]; then
+			emit PASS exit-codes-meaningful "unknown command exits $usr_code; separating user error from system failure needs a forced system fault, not probed here"
+		elif [ -s "$TMP/unknown.out" ]; then
+			# Exiting 0 is the symptom. The cause, in every corpus instance, was
+			# an unknown argument absorbed as INPUT: one CLI sent it to a remote
+			# API as a prompt, another answered `success: true` for a product
+			# search. Naming only the exit code understates it, and the reader
+			# needs the output to see which they have.
+			emit FAIL exit-codes-meaningful "unknown command exited 0 and produced $(wc -c <"$TMP/unknown.out" | tr -d ' ') bytes on stdout; the argument was absorbed as input rather than rejected, so a typo reads as a successful run"
 		else
-			emit PASS exit-codes-meaningful "unknown command exits $usr_code; distinguishing user error from system failure needs a forced system fault, not probed here"
+			emit FAIL exit-codes-meaningful "unknown command exited 0 with empty stdout; success and user error are indistinguishable"
 		fi
 
 		# D5  NO_COLOR removes styling without changing content.
