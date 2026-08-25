@@ -175,7 +175,16 @@ fi
 #     an agent that learned --json anywhere else will pass it expecting
 #     machine-readable output. A declaration taking a value is the signature.
 if hits="$(sgrep '\-\-json[[:space:]]+[<[]' 2>/dev/null)" && [ -n "$hits" ]; then
-	emit FAIL json-not-overloaded "--json declared with a value (input overload) at: $(printf '%s\n' "$hits" | sed "s|^$REPO/||" | cut -d: -f1,2 | tr '\n' ' ')"
+	# A declaration marked deprecated is a migration in progress, not a design
+	# choice. The ambiguity is still live for a caller, so this is not a PASS,
+	# but reporting it as a plain defect hides that someone is already fixing it
+	# and that the replacement exists.
+	where="$(printf '%s\n' "$hits" | sed "s|^$REPO/||" | cut -d: -f1,2 | tr '\n' ' ')"
+	if printf '%s\n' "$hits" | grep -qiE 'deprecat|legacy|alias'; then
+		emit SEMI json-not-overloaded "--json still takes a value at: $where, but is declared deprecated. The ambiguity is live until the alias is removed; check that a replacement flag exists and that passing the deprecated one warns"
+	else
+		emit FAIL json-not-overloaded "--json declared with a value (input overload) at: $where"
+	fi
 else
 	emit PASS json-not-overloaded "--json takes no value; reads as output mode"
 fi
