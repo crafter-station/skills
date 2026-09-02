@@ -14,7 +14,7 @@ Escalate only as far as you need. Each rung costs more.
 
 **3. Headless browser.** Gets past markup-level checks. Still detectable, and several corpus targets blocked headless specifically.
 
-**4. Headed browser.** The reliable rung. A real browser profile with a visible window passes nearly everything short of a captcha. Two targets required headed for login and worked fine with plain fetch afterward.
+**4. Headed browser.** The reliable rung — but only a real browser profile clears it. `agent-browser`'s own bundled browser is a Chrome-for-Testing build and can still be fingerprinted and blocked even headed. One target only passed once login moved to a real, already-authenticated browser instead of the bundled one. Two targets required headed for login and worked fine with plain fetch afterward.
 
 **5. Headed browser with a persisted profile.** When the challenge only appears on a cold session, solve it once and reuse the profile.
 
@@ -33,9 +33,13 @@ Anti-bot enforcement is almost always concentrated on the initial page load and 
 
 So: log in headed, extract the session cookie or token, then do the actual mapping with cheap fetches. This is both faster and less fragile than driving a browser for every request.
 
+**One exception looks identical to a missing header until checked.** One target rejected a plain HTTP client with a straight 403 despite a fully valid session cookie and headers copied verbatim from the browser — the block was on the client's TLS fingerprint, not the request. A TLS-emulating client (that project used `wreq`+`wreq-util` in Rust) passed with the exact same cookies and headers the plain client failed on. If cheap fetches start failing despite a valid session, suspect the TLS layer before diffing headers.
+
 ## What each blocker looks like
 
 **CDN challenge page.** A 403 with an interstitial, or a body that is a challenge script rather than your content. Headed browser clears it.
+
+**TLS fingerprint block.** A clean 403 with a valid session and correct headers — indistinguishable from a missing header until compared. The tell: a real browser succeeds with the *exact same* cookies and headers a plain HTTP client sends. For the recon session, keep using the browser. For the client you eventually build, a TLS-emulating HTTP library, not a plain one.
 
 **Edge security checkpoint.** A 403 with a vendor-specific header naming the mitigation. Notable because in one corpus case it blocked *both* `curl` and a browser, which pushed the recon onto a different surface entirely; the team analyzed a downloaded output artifact instead and still reached a correct conclusion about the backend. When the front door is sealed, look at what the service already gave you.
 

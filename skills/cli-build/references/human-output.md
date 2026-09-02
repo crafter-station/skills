@@ -78,13 +78,32 @@ An emitted example is an executable promise. If you print it, it must run.
 
 For most people `--help` is the whole product until they run something. It is not a reference appendix; it is the first thing they read and often the only thing.
 
-## Drawing a grid: choose the glyph by where it sits in the cell
+## Drawing a grid: overview first, identifiers on demand
 
-A character that draws well alone can break a grid when it renders wider or narrower than a cell. Pick glyphs by how they behave in the layout, not by how they look in isolation.
+A grid overview answers shape, position, density, and state. An identifier answers which exact object to act on. Printing every identifier in the overview makes each cell wider and can turn a spatial diagram into a spreadsheet.
 
-**And check the other axis.** A layout verified by column can still fail by row, or the reverse. Aligning one axis is not aligning the grid.
+Use one compact, fixed-width cell per object in the default human view. Preserve empty coordinates because gaps and aisles are part of the geometry. Reveal identifiers in a focused row, drill-down, interactive selection, or explicit flag when the reader needs to act on one object. Machine mode keeps the structured coordinates, identifiers, and states.
 
-**An axis header only helps when the axis is homogeneous.** If rows carry different units or scales, a shared header labels a relationship that does not exist.
+Choose the cell representation by what it means, not by how it looks in isolation:
+
+| Representation | Best fit | Failure mode |
+|---|---|---|
+| `◼◼` or another narrow geometric glyph | Discrete objects in an overview | Unicode width still needs verification in the target terminals |
+| `██` | Continuous magnitude or an area meant to touch | Adjacent rows can merge into vertical bars when used for discrete objects |
+| `[27]` | An identifier in selection or detail mode | Four visible columns per object overwhelm a large overview |
+| `##`, `[]`, or another fixed-width ASCII fallback | Environments where Unicode width is uncertain | Less visual fidelity, but predictable alignment |
+
+`◼`, `█`, and `■` are Unicode, not ASCII. The examples are tradeoffs, not a mandated palette. Decide the visible width budget first, then test the chosen glyph with the same width function and terminals used by the CLI. Two characters often make a terminal cell look square because terminal cells are usually taller than they are wide.
+
+Color can carry state without making every cell wider, which is why it works well in a dense overview. It cannot be the only carrier. Define each state once with its color, colored glyph, plain glyph or short label, and legend text. Render the map and derive the legend from that same definition so they cannot drift apart.
+
+When color is unavailable under `NO_COLOR`, a pipe, an unsupported terminal, or an accessibility preference, preserve the geometry and distinguish states with different plain glyphs or labels. A reader should still be able to tell states apart after the ANSI escapes are removed. Do not hard-code a universal palette: state meanings are domain-specific, and the important invariant is that the mapping is consistent, contrast is sufficient, and every state present is explained.
+
+Render geometry deterministically from structured coordinates. Do not infer position from display labels or ask an agent to redraw the layout from prose. A deterministic renderer owns spacing, orientation, and state; an agent can choose the mode or summarize the result.
+
+**Check both axes.** A layout verified by column can still be mirrored or inverted by row. When one provider axis needs reversal, verify the other against a real reference before trusting the map.
+
+**An axis header only helps when the axis is homogeneous.** If rows use different numbering or scales, a shared header labels a relationship that does not exist. Put identifiers inside their cells in the explicit detail mode instead.
 
 ## A derived legend cannot go stale
 
@@ -143,7 +162,7 @@ The failure this prevents is specific and was observed. One CLI used amber for w
 Two rules fall out of that:
 
 - **The glyph and the color must agree.** A red `✓` asks the reader to resolve a contradiction that has no answer.
-- **Reach for red only for errors.** Once red means anything else, it stops meaning error, and error is the one state a reader must not have to parse.
+- **Outside a bounded data visualization, reach for red only for errors.** A grid or chart may use a local categorical palette for domain states when its legend makes the scope explicit. Global diagnostics still keep their semantic palette, and the same screen must not leave the reader guessing whether red means a data state or a failure.
 
 An error line reads best as three levels: the word in `danger`, a searchable code `muted` beside it, the message plain, and the hint `muted` on its own line, because the hint is the way out rather than the problem.
 
