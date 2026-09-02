@@ -1,68 +1,131 @@
 # Recon report template
 
-Copy this, fill it, delete what does not apply. The frontmatter is what makes a set of reports queryable, so keep every field even when the answer is "none".
+Copy this, fill it, and delete sections that do not apply. Keep every frontmatter field so reports remain queryable.
 
 ```markdown
 ---
 type: surface-recon
-target: {url or name}
+target: {url, package, binary, device, or name}
 created: {date}
-terrain: {A-H}
-auth: {none|api-key|oauth2|browser-bootstrapped-token|cookie|jwt|hmac|certificate}
-official-api: {yes|partial|no}
+access: {public|owned|granted|blocked|mixed}
+planes: [{network|interactive|command|artifact|device|firmware|runtime}]
+primary-plane: {one plane}
+acceptance: [{enumeration|replay|state-transition|contract-conformance|round-trip|receipt-plus-poststate|execution-placement|boot-and-recovery}]
+maximum-consequence: {passive|reversible|creative|persistent|destructive|external}
+legacy-terrain: {A-H|none}
+auth: {none|api-key|oauth2|browser-bootstrapped-token|cookie|jwt|hmac|certificate|device-pairing|owned-device|mixed}
+official-surface: {complete|partial|none}
 confidence: {high|medium|low}
 ---
 
 # {Target}, Recon
 
+## Verdict
+{Build it, build it narrowly, or do not build yet. Name the load-bearing reason.}
+
 ## What it is
-{1-2 sentences. What the service does, who uses it.}
+{What the target does, who uses it, and which boundary is being reconstructed.}
+
+## Recon profile
+
+| Dimension | Selection | Why |
+|---|---|---|
+| Access | owned | Operator controls target and account |
+| Planes | device, network, artifact | BLE bootstrap, Wi-Fi control, media files |
+| Acceptance | receipt-plus-poststate, round-trip | Writes need receipts; media must reopen |
+| Maximum consequence | persistent | Settings can survive reboot |
+
+## Plane map
+
+| Plane | Surface | Instrument | Authorized consequence | Acceptance proof |
+|---|---|---|---|---|
+| device | BLE GATT | scanner and official-client capture | reversible | receipt plus poststate |
+| artifact | project package | structural diff and producer reopen | creative | round trip |
 
 ## Official surface
-{Spec URL, SDK, docs quality. Or: "None found. Searched: <queries>."}
+{Specs, SDKs, schemas, manuals, or none found. Separate cited behavior from observation.}
 
-## Authentication
-{The exact flow, step by step. Header names and formats. Token lifetime.
-Rotation behavior. Second factors. What you OBSERVED vs what you inferred.}
+## Authentication and authority
+{Exact auth flow, target ownership, granted scope, physical-presence requirements, token rotation, and what is explicitly out of scope.}
 
-{The first four frontmatter values match the IR's four auth modes, so a report
-that will also produce an IR should prefer them. The rest describe a flow the
-IR has no mode for, which is worth stating plainly in this section: the report
-can describe an auth scheme the IR cannot carry, and an implementer needs to
-know which side of that line the target falls on. See ir-target.md.}
+If the recon also emits a Surfacer IR, map auth to the IR modes defined in `ir-target.md`. The report can describe auth schemes the IR cannot carry.
 
-## Endpoints
+## Evidence ledger
 
-| Method | Path | Purpose | Auth | Verified |
+| Plane | Claim | Provenance | Acceptance proof | Receipt |
 |---|---|---|---|---|
-| GET | /api/v1/thing | List things | Bearer | observed |
-| POST | /api/v1/thing | Create | Bearer | inferred from bundle |
+| network | GET /v1/items lists media | observed | replay | capture.har plus replay transcript |
+| device | command changes mode | observed | receipt-plus-poststate | frame capture plus status readback |
+| firmware | inner image is signed | cited and observed | enumeration | vendor note plus package hash |
 
-For Terrain F and H there are no endpoints. Replace this section with the
-schema (F) or the constraint set the implementer must satisfy (H): which
-operations are accepted, which are silently substituted, required layouts
-and formats, and how each one was verified.
+Provenance is `observed`, `cited`, or `inferred`. Inferred claims always belong under Needs verification until their acceptance proof succeeds.
+
+## Network contract
+
+| Method | Path | Purpose | Auth | Provenance | Replay |
+|---|---|---|---|---|---|
+| GET | /api/v1/thing | List things | Bearer | observed | verified |
+
+Only independently observed network rows can enter the Surfacer IR.
+
+## Command contract
+
+| Command, tool, or function | Input schema | Output and exit state | Poststate | Verified |
+|---|---|---|---|---|
+
+## Interactive state map
+
+| Precondition | Action | Visible transition | Persisted poststate | Recovery |
+|---|---|---|---|---|
+
+## Artifact contract
+
+| Artifact | Structure | Volatile fields | Controlled mutation | Round trip |
+|---|---|---|---|---|
+
+## Device protocol
+
+| Transport | Identity | Operation | Receipt | Independent poststate | Verified |
+|---|---|---|---|---|---|
+
+Add the interface/context matrix, mutation ledger, command matrix, telemetry census, private evidence boundary, and next safe mutation rung required by `hardware-protocol-recon.md`.
+
+## Firmware contract
+
+| Package or partition | Hash | Signature or integrity | Version rule | Recovery evidence |
+|---|---|---|---|---|
+
+## Runtime constraints
+
+| Workload | Accepted form | Placement receipt | Fallback behavior | Baseline |
+|---|---|---|---|---|
 
 ## Blockers
-{Anti-bot, captcha, rate limits, session expiry, required headers.
-For each: what you hit, and what got past it; or that nothing did.}
+{For each blocker: what was attempted, observed result, and exact unblocker.}
 
 ## Gotchas
-{The non-obvious things that cost time. Be specific enough to save the
-next person the same hour. Wrong-looking names, double encoding, values
-that must be re-read on every response, endpoints that lie about 200.}
+{Specific details that save the next operator time.}
 
 ## Needs verification
-{Everything you could not confirm, and the exact step that would confirm it.}
+{Every unresolved claim and the exact proof that would resolve it.}
+
+## Safety and recovery
+{Consequence ceiling, backups, rollback, recovery path, disposable fixtures, and stop conditions.}
 
 ## Evidence
-{HAR file, screenshots, bundle hashes. Where they live.}
+{Paths and hashes for captures, transcripts, screenshots, schemas, artifacts, descriptors, packages, and receipts.}
 ```
 
-## Per-terrain variants
+## Profile variants
 
-**Terrain F (a file format)** has no endpoints and no auth. Replace both sections with the schema: every field, which ones appear only sometimes, version drift between samples, and the encodings that break naive parsers.
+**Blocked access** sets `access: blocked`, usually `confidence: low`, and inventories only the public or operator-authorized surface. Name the exact unblocker. Do not treat lack of access as permission to bypass controls.
 
-**Terrain H (hardware or an accelerator)** has no endpoints either. Replace them with the constraint set the implementer must satisfy: which operations are accepted, which are silently substituted for something slower, required layouts and formats, and how each one was verified. Record the silicon, OS, and toolchain version, since a constraint true on one generation can be false on the next.
+**Network-only** profiles can omit the command, artifact, device, firmware, and runtime sections.
 
-**Terrain D (a portal you cannot log into)** sets `confidence: low` and puts nearly everything under "Needs verification". The one line that matters is what would unblock it.
+**Interactive plus artifact** profiles need both a visible state transition and a producer reopen. Screen state alone does not prove persistence.
+
+**Device** profiles require stable target identity, a transport or protocol receipt, and independent poststate verification. Follow [hardware-protocol-recon.md](hardware-protocol-recon.md).
+
+**Firmware** profiles remain passive until a backup, recovery path, expendable target, and explicit authorization exist. Static package findings use enumeration, not boot-and-recovery.
+
+**Runtime** profiles require placement evidence because successful output can hide fallback.

@@ -1,10 +1,10 @@
 # Terrain playbooks
 
-Eight terrains, each with the technique that actually worked.
+These playbooks are routed by plane. Start with [terrain-model.md](terrain-model.md), then use every playbook matching the target profile.
 
-Terrains A through G come from 21 recon reports across public APIs, private GraphQL, government portals, LMS platforms, BaaS apps, file formats, and desktop binaries. Terrain H comes from separate work characterizing an on-device neural accelerator, and it is the newest of the eight.
+Sections A through H are legacy archetypes retained because they encode techniques proven across public APIs, private GraphQL, government portals, LMS platforms, BaaS apps, file formats, desktop binaries, accelerators, and connected devices. They are a compatibility index, not the classification system.
 
-The terrain is not the tech stack. It is **how much is documented and whether you can log in.** Those two questions predict the work better than REST-vs-GraphQL ever does.
+The current terrain model separates access, exposed planes, acceptance proof, and maximum consequence. A single target can therefore require several playbooks without pretending that evidence from one plane proves another.
 
 ---
 
@@ -184,7 +184,12 @@ Extraction output can be enormous. Extract to disk and search on disk. Do not pu
 
 The vendor's docs describe an idealized interface. What you need is the constraint set that decides whether your work is accepted at all, and that is usually undocumented.
 
-**Technique, in order:**
+First classify the subtype:
+
+- **Accelerator:** the hidden contract is workload acceptance, fallback, layout, and performance.
+- **Connected device:** the hidden contract is split across discovery, control, data, storage, update, and accessory planes. Read [hardware-protocol-recon.md](hardware-protocol-recon.md) before interacting.
+
+**Accelerator technique, in order:**
 
 1. **Read the literature before touching the device.** Somebody has probably already characterized it. A published constraint catalog saves days of bisection, and citing it is faster and more accurate than rediscovering it.
 2. **Enumerate what is actually present.** The OS knows more than the docs: device trees and registries, connected-device listings, driver and firmware versions.
@@ -192,24 +197,149 @@ The vendor's docs describe an idealized interface. What you need is the constrai
 4. **Measure per unit, not in aggregate.** A device that reports one number hides where the work went. Power and throughput broken out by compute unit is what tells you whether the accelerator ran your workload or quietly handed it to the CPU.
 5. **Replay against a baseline on the same silicon.** "Faster" means nothing without a same-size comparison measured on the same machine under the same load.
 
-**What this looks like when it works:** one corpus target was an on-device neural accelerator whose real nature contradicted the mental model everybody uses. Advertised as a general scheduling option, it turned out to be a fixed-function convolution engine where one operation class runs several times faster than the one most models are built around. The report that matters was not a list of endpoints, it was a constraint catalog: which activation, whether bias is allowed, which memory layout, which operation set. Verified by a full export landing zero rejections, and by per-unit power measurement showing the accelerator drawing less power at higher throughput than the alternative.
+**Connected-device technique, in order:**
+
+1. Enumerate each physical and logical plane without writing to it.
+2. Record the complete context matrix: model, firmware, host, transport, topology, mode, power, lock, activation, storage, and pairing state.
+3. Advance through the mutation ladder one rung at a time. Get explicit approval before persistent pairing, state transitions, data writes, or firmware operations.
+4. Enable capture and receive paths before authentication. Replay only source-backed frames and distinguish acknowledgement from verified state change.
+5. If the transition can remove the controller, stage a one-shot local runner with timeout, cleanup, recovery, and receipts before changing state.
+6. Correlate surprising values with another plane. Zero, null, silence, rejection, accepted calls, and verified state are different states.
+7. Preserve a compact sanitized receipt and the exact failure that changed the probe.
+
+**What this looks like when it works:** one accelerator target yielded a constraint catalog verified by zero export rejections and per-unit power measurement. One connected camera yielded separate USB storage, BLE discovery, persistent application pairing, and telemetry contracts. A generic version query was rejected on BLE and a storage status reported zero while USB exposed the real capacity. Those contradictions were findings, not noise: command support was transport-specific and status semantics were mode-dependent.
 
 **Gotchas specific to this terrain:**
 
 - **Silent fallback is the failure mode.** Unlike a web API, a device rarely errors. It accepts the work and runs it somewhere slower. Always verify *where* it executed, never assume from the absence of an error.
 - **Separate what you measured from what you read.** A published catalog is a citation, not your finding. Keep them distinct in the report; conflating them is how a paper's claim becomes your unverified assumption.
-- **The constraint set is versioned by silicon.** A rule true on one generation can be false on the next. Record which chip, OS, and toolchain version the measurement came from.
+- **The contract is versioned by context.** Record silicon or hardware revision, firmware, host, OS, toolchain, transport, topology, and device mode.
 - **Aggregate metrics lie.** Total power and wall-clock time cannot tell you which unit did the work.
+- **Pairing is persistent state.** Read-only intent does not make its setup read-only. Use a stable private identity and obtain approval at that boundary.
+- **A response is not support.** Parse the status and validate the state. Scope every result to the target, transport, and mode that produced it.
+- **Hashes are not redaction for low-entropy payloads.** Use opaque per-session variants or a non-retained keyed digest.
+- **The control channel can be part of the experiment.** Tailscale over the Wi-Fi interface being switched will disappear with that interface. Run the transition locally and restore it without the controller.
+- **Host permissions are launch-surface specific.** SSH, Terminal, and an app can receive different Bluetooth, location, and accessibility decisions on the same Mac.
+- **Success return codes are not state receipts.** Verify target identity, address, peer reachability, and service reachability separately.
+- **Documentation can lag the executed path.** Resolve contradictions against the current code path and physical capture before sending a state-changing fallback command.
 
-Both this terrain and Terrain F end in the same place: the report is a set of rules the implementer must satisfy, not a table of endpoints to call.
+Terrain H is now a legacy route into the device, firmware, or runtime planes. It ends in a context-scoped contract. Accelerators and non-HTTP device planes use constraint or command matrices. An independently observed HTTP plane can also produce the endpoint table and IR described in [ir-target.md](ir-target.md).
 
 ---
 
-## Cross-terrain: what always goes in the report
+## Command plane: CLI, SDK, MCP, or daemon
 
-Regardless of terrain:
+**Tell:** the stable interaction surface is commands, functions, tools, schemas, stdin/stdout, or local IPC.
+
+**Technique:** enumerate before invoking. Capture help, version, schemas, exit codes, stdout, stderr, state before, and state after. For an MCP server, list tools, resources, prompts, and their input schemas before calling anything. For an SDK, use type definitions and official examples as cited evidence, then execute a minimal fixture.
+
+**Acceptance proof:** contract conformance. A successful command is not enough. The invocation must match the advertised schema, return the documented output class, use the expected exit state, and produce the intended poststate.
+
+**Gotchas:**
+
+- Human-readable output can hide a nonzero exit code.
+- A daemon may acknowledge a command before the work finishes.
+- MCP tool discovery proves availability, not semantics.
+- Local sockets and lock files can retain state between supposedly isolated runs.
+
+---
+
+## Interactive plane: desktop or mobile UI
+
+**Tell:** the user-visible state and interaction sequence are part of the contract.
+
+**Technique:** inventory screens, controls, keyboard paths, accessibility roles, local state, and visible transitions. Use a disposable project or account. If the app is Electron, Terrain G still supplies the strongest instrumentation. Otherwise combine accessibility inspection, screen observation, process inventory, and artifact diffs.
+
+**Acceptance proof:** state transition. Record the precondition, action, visible transition, persisted result, and recovery path. Coordinate clicks without a stable semantic anchor are weak evidence.
+
+**Gotchas:**
+
+- A visible toast can report success before persistence finishes.
+- Restarting the app may reveal that a change never saved.
+- A UI action can mutate both a local project and a cloud account.
+- Authentication belongs to the access profile, not to the UI technology.
+
+---
+
+## Artifact plane: files, projects, exports, and media packages
+
+**Tell:** durable files are the integration boundary, even when another plane creates them.
+
+**Technique:** generate two minimal samples with one controlled difference, normalize volatile fields, diff structure, mutate only a disposable copy, then reopen it in the producer. Terrain F covers raw schema discovery; this playbook adds producer-consumer round trips.
+
+**Acceptance proof:** round trip. The producer must reopen the artifact, preserve unrelated structure, and expose the intended change. Parsing alone proves only that your parser accepted the file.
+
+**Gotchas:**
+
+- ZIP-based projects often contain indexes, checksums, or derived previews.
+- Timestamps and random identifiers create noisy diffs.
+- Sidecar files may be more load-bearing than the visible media.
+- Export compatibility does not imply project compatibility.
+
+---
+
+## Device plane: USB, BLE, serial, or HID
+
+**Tell:** the boundary is a physical transport carrying descriptors, characteristics, frames, reports, or vendor commands.
+
+**Technique:** establish target identity first. Enumerate descriptors and read-only state, capture one known-good interaction from the official client, replay the smallest reversible operation, and verify the device poststate independently. Keep transport discovery separate from protocol interpretation. Use [hardware-protocol-recon.md](hardware-protocol-recon.md) for the full context matrix and mutation ladder.
+
+**Acceptance proof:** receipt plus poststate. A write completing only proves that bytes left the host. Require a protocol receipt when available and an independently observed state change.
+
+**Gotchas:**
+
+- BLE may bootstrap Wi-Fi without carrying the main control protocol.
+- USB mass storage and USB vendor interfaces are different planes on the same cable.
+- Serial framing can be correct while checksums or sequence numbers are wrong.
+- HID output reports can be accepted silently and ignored.
+- Device identity can change after reboot, mode switch, or re-enumeration.
+
+---
+
+## Firmware plane: update packages, partitions, and boot behavior
+
+**Tell:** the durable target is software executed by a device before or below the normal application layer.
+
+**Technique:** stay offline first. Hash the package, identify container structure, manifests, signatures, partitions, compression, and version checks. Compare at least two official versions when available. Map the boot and recovery path before any write.
+
+**Acceptance proof:** boot and recovery. Static unpacking proves package understanding, not that a modified image is safe or accepted. Flashing requires explicit authorization, a backup, a verified recovery route, and a target the operator can afford to lose.
+
+**Gotchas:**
+
+- A valid outer package can contain signed inner images.
+- Anti-rollback counters can make a reversible-looking test permanent.
+- Calibration, pairing, and serial data may live beside firmware.
+- A successful flash receipt does not prove a successful boot.
+
+---
+
+## Runtime plane: compiler, accelerator, or execution substrate
+
+**Tell:** the boundary decides whether work is accepted, transformed, rejected, or silently executed elsewhere.
+
+**Technique:** enumerate versions and capabilities, submit controlled workloads, inspect compilation or placement receipts, measure per execution unit, and compare against a baseline on the same machine.
+
+**Acceptance proof:** execution placement. A successful result is insufficient when silent fallback exists. Prove where the work executed.
+
+**Gotchas:** retain all accelerator constraints from legacy Terrain H, especially silicon, OS, and toolchain specificity.
+
+---
+
+## Composite systems
+
+Use a separate evidence row for every plane boundary. Correlate them by timestamp, stable identifier, or controlled state transition.
+
+An owned camera can expose BLE for discovery, Wi-Fi for control and media, USB mass storage for files, a vendor USB interface for commands, and firmware update packages. A screen-recording app can expose UI state, project artifacts, command hooks, and media exports. Neither target has one terrain.
+
+The composite acceptance rule is strict: every claimed bridge needs its own proof. BLE discovery does not prove camera control. A media file appearing over USB does not prove the vendor command protocol. A UI toggle changing does not prove the project persisted until the artifact survives reopen.
+
+---
+
+## Cross-profile: what always goes in the report
+
+Regardless of profile:
 
 - **Auth flow, observed.** Header names verbatim. Token lifetime. Whether anything rotates.
 - **Rate limits, as measured.** If no limit headers appeared and you did not probe, write "no limit headers observed, not measured". Do not invent a number. Six corpus reports all adopted the same polite default without measuring, which reads like evidence and is not.
 - **Contract stability.** An undocumented endpoint has no contract and no deprecation notice. Say so.
-- **The evidence trail.** HAR, screenshots, bundle hashes, and where they live. A finding whose receipt is gone cannot be re-verified.
+- **The evidence trail.** HAR, screenshots, command transcripts, descriptor captures, artifact hashes, firmware hashes, runtime receipts, and where they live. A finding whose receipt is gone cannot be re-verified.

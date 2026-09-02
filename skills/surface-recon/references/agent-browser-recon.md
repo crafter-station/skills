@@ -106,6 +106,6 @@ agent-browser --session "$SESSION" --restore open <url>
 
 - **Terrain A**: an OpenAPI spec answers everything. Do not open a browser.
 - **Terrain F**: the target is a file. Read samples.
-- **Terrain H**: the target is a device. The acceptance boundary is a compiler or runtime, not a network call.
+- **Terrain H**: an accelerator's acceptance boundary is its compiler or runtime. A connected device needs transport-native capture across USB, BLE, serial, Wi-Fi, storage, or firmware planes. Use [hardware-protocol-recon.md](hardware-protocol-recon.md), not a browser, unless an independently observed HTTP plane is part of the device surface.
 
 Reaching for a browser on these three is the most common way to spend an afternoon on a solved problem.

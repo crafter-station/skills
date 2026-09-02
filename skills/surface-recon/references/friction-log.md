@@ -4,19 +4,20 @@ A recon that ends at the verdict throws away half of what it produced. The repor
 
 Two kinds of friction, logged differently.
 
-## Terrain friction: the playbook was wrong or thin
+## Profile friction: the playbook was wrong or thin
 
 The highest-value kind. A terrain playbook claims a technique works and the target proves otherwise, or the target does something no playbook mentions.
 
-Append to `recon/friction.md` next to the report, one line, at the moment it happens:
+Append to `recon/friction.md` next to the report, one line, at the moment it happens. Tag the affected plane and access mode:
 
 ```markdown
-- [terrain C] the session token rotates on every response, not just on login. Playbook says re-extract after each auth; it needs re-extraction per request.
-- [terrain B] `react tree` returned empty. Server-rendered app, almost no client components. Playbook should say when to skip it, not just how to enable it.
-- [terrain G] the app ignores `--remote-debugging-port` when an instance is already running. Had to quit it first.
+- [plane network][access granted] the session token rotates on every response, not just on login. Playbook says re-extract after auth; it needs re-extraction per request.
+- [plane interactive][access owned] Screen Studio showed the edit as saved, but the project artifact did not change until export. State transition and round trip need separate receipts.
+- [plane device][access owned] the camera BLE service disappeared after Wi-Fi activation. Identity must be re-enumerated after transport changes.
+- [plane firmware][access owned] the outer update package unpacked, but every partition image remained signed. Static discovery must stop before patching.
 ```
 
-The format that makes these usable later: **which terrain, what the playbook said, what actually happened.** A line without the terrain tag cannot be routed to a fix.
+The format that makes these usable later: **which plane, which access mode, what the playbook said, what actually happened.** Legacy reports may retain `[terrain B]`, but new reports use the profile tags.
 
 ## Tool friction: the command failed or misled
 
@@ -52,7 +53,7 @@ A gate that fired and saved time is evidence it earns its place. A gate that exi
 
 The report ships to whoever asked for it. The friction log goes to whoever maintains the skill.
 
-- **Terrain friction** becomes a playbook edit, and the entry is the evidence for it.
+- **Profile friction** becomes a playbook edit, and the entry is the evidence for it.
 - **Tool friction** becomes an upstream report, or a caveat in [agent-browser-recon.md](agent-browser-recon.md) when the behavior is real and unlikely to change.
 - **Verdict friction** becomes a sharper gate in [gates.md](gates.md), or a gate moved earlier in the flow.
 

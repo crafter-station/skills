@@ -4,6 +4,14 @@ Checks that stop a recon from producing a confident, wrong report. Each one exis
 
 ## Before starting
 
+**Did you classify all four dimensions?** Record access, planes, acceptance proof, and maximum consequence. A product category such as camera, mobile app, or desktop app is not a recon profile.
+
+**Is every plane explicitly authorized?** Owning a device does not automatically authorize a cloud account, another user's data, a third-party service, or destructive firmware changes. Record authority per plane.
+
+**Did you choose the proof before the probe?** Enumeration, replay, state transition, contract conformance, round trip, receipt plus poststate, execution placement, and boot plus recovery answer different questions. Without a selected proof, a convenient success signal becomes the verdict.
+
+**Is the consequence ceiling explicit?** Default to passive. Reversible, creative, persistent, destructive, and external actions each require increasing evidence and operator clarity. Firmware writes require explicit authorization, backup, recovery, and an expendable target.
+
 **Did you search for an official API?** The cheapest recon is reading a spec. Search for docs, an OpenAPI file, and an SDK before opening a browser. Skipping this and going straight to traffic capture is the most common way to spend hours on a solved problem.
 
 **Do you have credentials for a login-walled target?** If not, the output will be a list of unknowns, not a map. Say that before starting, and ask whether an account is obtainable. Six corpus reports skipped this gate and produced tables where 80 to 90 percent of rows were unverified.
@@ -11,6 +19,12 @@ Checks that stop a recon from producing a confident, wrong report. Each one exis
 **Is there a public path to the same data?** Many services with a login also expose a public consultation form or an open-data export. Check before accepting a credential-blocked recon.
 
 ## During capture
+
+**Are you keeping evidence separated by plane?** Evidence does not transfer across boundaries. BLE enumeration does not prove Wi-Fi control. A UI confirmation does not prove artifact persistence. USB mass storage does not prove a USB vendor protocol.
+
+**For a physical target, did you re-check identity after every mode change or reboot?** BLE names, USB interfaces, addresses, and routes can change. A valid receipt from the wrong interface is still the wrong target.
+
+**Did you distinguish transport completion, protocol receipt, and poststate?** A successful socket write, BLE write, USB transfer, or serial frame proves only transport. Record each layer independently.
 
 **Is the domain you captured where the functionality lives?**
 
@@ -46,7 +60,17 @@ Apply these per row of the endpoint table.
 
 **Are you reporting a rate limit you measured?** If you did not read a header or probe, write "not measured".
 
-## Before claiming a hardware finding
+**For a command surface, did you record schema, output, exit state, and poststate?** Help text alone is cited evidence. One successful invocation without its failure behavior is partial conformance.
+
+**For an artifact, did the producer reopen it?** Parsing or modifying a file proves nothing about producer compatibility until it survives a round trip.
+
+**For an interactive surface, did the result survive the relevant boundary?** Reload, reopen, reconnect, or reboot when persistence is part of the claim.
+
+**For a device write, do you have both a receipt and independent poststate?** If either is absent, report transport progress rather than accepted control.
+
+**For firmware, are you still inside the authorized consequence ceiling?** Package unpacking and hashing are passive. Patching is creative. Flashing is persistent or destructive. Never let discovery silently promote the allowed consequence.
+
+## Before claiming a runtime finding
 
 **Did you verify where the work ran, or only that it did not error?** A device rarely refuses. It accepts the workload and quietly runs it on a slower unit. Absence of an error is not evidence of acceleration. Measure per compute unit.
 
@@ -55,6 +79,46 @@ Apply these per row of the endpoint table.
 **Did you record the silicon, OS, and toolchain version?** A constraint true on one generation can be false on the next, and a report without those three cannot be re-checked.
 
 **Did you compare against a baseline on the same machine?** "Faster" with no same-size comparison under the same load is not a measurement.
+
+### Connected-device protocol gates
+
+**Did you record the exact context?** A device finding without model, hardware revision, firmware or `unknown`, host, OS, toolchain, transport, physical topology, mode, power, lock, activation, storage, and pairing state cannot be transferred safely to another session.
+
+**Which mutation rung did you reach, and was it approved?** Passive observation, ephemeral connection, read-only query, persistent authentication, state transition, data mutation, and firmware mutation are separate boundaries. Pairing is persistent device state.
+
+**Was capture active before interaction?** Enable notifications, reads, sniffing, or serial capture before authentication. Setup traffic can contain the state you are trying to discover.
+
+**Did you scope command support to target, transport, and mode?** A parser in a client, a command on another model, or a success on another transport is a citation, not proof here.
+
+**Did you distinguish receipt from state?** A response or ACK proves that a frame was handled. It does not prove success unless its status is parsed and the resulting state is independently observed.
+
+**Did you separate transport from application authorization?** TCP connect, UDP reachability, and write completion prove transport. Require a protocol-specific authorization or command response before claiming that the application session is registered.
+
+**Did you keep zero, null, silence, timeout, and rejection separate?** Correlate surprising values with another plane before assigning meaning.
+
+**Can the parser survive real streaming behavior?** Test bounds, checksums, fragmentation, coalescing, garbage prefixes, partial tails, and sliced buffers whose start index is not zero.
+
+**Did the decoder preserve field structure?** Do not reject or invent a logical value because one wire field looks incomplete. Confirm whether path, filename, extension, handle, or metadata are split across tagged fields and associate them only inside a measured record boundary.
+
+**Did you validate decoded cardinality twice?** Require the protocol's declared count to match decoded records, then compare the aggregate against an independent plane when available. A count-valid decode that also matches USB, storage, or device UI is a materially stronger receipt than readable output alone.
+
+**Did one probe incorrectly gate another?** HEAD, GET, range GET, and protocol-level metadata are separate observations unless the measured contract proves a dependency. A failed convenience probe must not suppress an independently authorized acceptance test.
+
+**Does the runner exit status describe the finding?** Completed system calls are not a successful recon. If every candidate method, selector, or endpoint failed, the runner must return nonzero so automation cannot record the run as passed.
+
+**Did you capture a control pair in one state window?** A positive result plus a nearby negative selector, mode, endpoint, or input distinguishes a real mapping from a permissive server or stale state. Record both without turning the negative control into repeated load.
+
+**Did you separate HTTP body bytes from HTTP success?** Error pages carry bytes too. Require an accepted status and expected method semantics, then record byte count and whether content was retained as independent facts.
+
+**Is the evidence compact and actually sanitized?** Log first occurrence, semantic changes, and a census. A normal hash is not redaction for a short or guessable payload. Keep identities, tokens, SSIDs, passphrases, filenames, and personal telemetry out of durable receipts.
+
+**Did you preserve persistent identity correctly?** Reusing a stable per-install pairing identity can be required for reproducibility. It belongs outside version control and must never appear in logs or reports.
+
+**Did you prove target identity independently of its address?** A private IP, gateway shape, ICMP reply, or route change can belong to the ordinary LAN as easily as the device. Require the link identity and a target-specific protocol signature in the same observation window before attributing service behavior to the target.
+
+**Did you separate operator observation from operator authorization?** A human confirming the device network, cable, prompt, or mode is link evidence. It is not consent for pairing, playback, settings, deletion, firmware, or another mutation. Record the confirmation and the approved mutation rung independently.
+
+**Did the failed run preserve enough private evidence for offline analysis?** A sanitized receipt explains the outcome, but a phase-tagged raw trace can prevent unnecessary device replay. Keep it outside version control with restrictive permissions and an explicit retention boundary.
 
 ## Before claiming a backend type
 

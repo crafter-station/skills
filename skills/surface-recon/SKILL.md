@@ -1,8 +1,7 @@
 ---
 name: surface-recon
-version: 0.7.0
-description: "Map what a target exposes and produce a recon report an implementer can build from. Works on web services and APIs, login-walled portals, desktop apps and compiled binaries, file formats, and hardware or accelerators whose real constraints are undocumented. Use when the user says 'recon this', 'reverse engineer this', 'map this API', 'figure out their endpoints', 'what does this device actually support', 'I want to build a CLI/client for X', or pastes a URL and asks what it exposes. Also use before building any integration against something whose contract you have not verified."
-allowed-tools: Bash(agent-browser:*), Bash(npx agent-browser:*)
+version: 0.8.0
+description: "Map an authorized target into evidence-backed contracts and produce a recon report an implementer can build from. Use for web or mobile APIs, login portals, desktop apps, CLIs, SDKs, MCP servers, local daemons, file and project formats, USB/BLE/serial/HID devices, firmware packages, runtimes, and accelerators. Trigger when the user says recon, reverse engineer, map the interface or protocol, inspect an undocumented integration, discover what a device actually supports, or wants to build a client, CLI, MCP, SDK, adapter, or compatible implementation before its contract is verified."
 ---
 
 # surface-recon
@@ -15,13 +14,25 @@ This skill investigates. It does not design a command surface or write code: tha
 
 **Every claim in the report is either observed or labeled as unverified.** A recon report that guesses without saying so is worse than no report, because the implementer trusts it and loses a day. Mark inference as inference.
 
-Concretely: the endpoint table holds requests you observed. Everything else goes under "Needs verification", each with the step that would confirm it.
+Concretely: an evidence row states its plane, claim, provenance, acceptance proof, and receipt. Anything inferred names the exact step that would verify it.
 
 **Open `recon/friction.md` before Phase 0 and append to it as you go.** Every time a playbook is thin, a command fails for a reason its help text did not predict, or a gate does or does not hold, that is one line written at the moment it happens. It ships with the report and it is the only input that improves this skill. See [friction-log.md](references/friction-log.md).
 
-## The tool
+## Instrument router
 
-Observation happens through `agent-browser`, and that tool ships its own guides that stay version-matched with the binary. Load them rather than guessing commands from memory:
+Choose instruments after classifying the plane. A target can expose several planes, and each plane needs its own evidence.
+
+| Plane | Start with |
+|---|---|
+| Network or web UI | Official specs, then `agent-browser` capture and independent replay |
+| Desktop or mobile UI | Screenshot and accessibility, then network, logs, and disposable artifacts |
+| CLI, SDK, MCP, daemon | Help or schema enumeration, controlled calls, exit/status and state fixtures |
+| File or project format | Real samples, metadata, schema inference, normalized round-trip |
+| USB, BLE, serial, HID | OS enumeration, descriptors, passive capture, differential sessions |
+| Firmware | Official update packages, hashes, extraction, trust-chain inventory |
+| Runtime or accelerator | Accepted and rejected workloads, tracing, per-unit placement metrics |
+
+For network and interactive browser planes, `agent-browser` ships version-matched guides. Load them rather than guessing commands from memory:
 
 ```bash
 agent-browser skills get core           # the workflow: snapshot, refs, waits, sessions, mocking
@@ -48,44 +59,52 @@ Two specifics worth knowing:
 
 The failure mode this prevents is not a missing tool. It is reaching for the instrument that represents you as someone who reads systems, over the one that answers the question.
 
-## Phase 0: classify the terrain
+## Phase 0: profile the terrain
 
-Before touching a browser, decide which of these you are dealing with. The terrain determines the technique, and getting this wrong wastes the most time.
+Before touching an instrument, classify four dimensions. Read [terrain-model.md](references/terrain-model.md).
 
-| Terrain | Tell | Go to |
+| Dimension | Values | Why it matters |
 |---|---|---|
-| Official documented API | Public docs, OpenAPI spec, SDK on npm | [Terrain A](references/terrain-playbooks.md#official-documented-api) |
-| Private API behind a SPA | App loads then fetches JSON/GraphQL | [Terrain B](references/terrain-playbooks.md#private-api-behind-a-spa) |
-| Portal with a login you have | Session cookie, server-rendered forms | [Terrain C](references/terrain-playbooks.md#portal-with-credentials) |
-| Portal with a login you do NOT have | Login wall, no account | [Terrain D](references/terrain-playbooks.md#portal-without-credentials), read this before starting |
-| SPA on a BaaS | Supabase/Firebase client in the bundle | [Terrain E](references/terrain-playbooks.md#spa-on-a-baas) |
-| No backend at all | Local file, export, data format | [Terrain F](references/terrain-playbooks.md#no-backend) |
-| Desktop app or binary | Electron `.asar`, compiled binary | [Terrain G](references/terrain-playbooks.md#desktop-app-or-binary) |
-| Hardware or an accelerator | A device or chip whose real contract is undocumented | [Terrain H](references/terrain-playbooks.md#hardware-or-an-accelerator) |
+| Access | `public`, `owned`, `granted`, `blocked`, `mixed` | Defines authority and whether meaningful observation can start |
+| Planes | `network`, `interactive`, `command`, `artifact`, `device`, `firmware`, `runtime` | Routes instruments and keeps evidence separated |
+| Acceptance | `enumeration`, `replay`, `state-transition`, `contract-conformance`, `round-trip`, `receipt-plus-poststate`, `execution-placement`, `boot-and-recovery` | Defines what proves the claim |
+| Maximum consequence | `passive`, `reversible`, `creative`, `persistent`, `destructive`, `external` | Defines approval, audit, cleanup, and recovery gates |
 
-**Done when:** one terrain named, and for Terrain D, the credentials question answered before any other work.
+Record a profile before probing:
 
-Two terrains are traps worth naming up front:
+```yaml
+access: owned
+planes: [device, network, artifact]
+primary-plane: device
+acceptance: [enumeration, replay, receipt-plus-poststate, round-trip]
+maximum-consequence: persistent
+```
 
-**Terrain A is the one to hope for.** Always search for official docs, an OpenAPI spec, or an SDK *first*. When a public OpenAPI spec exists, recon is reading one file and you are done in minutes. Skipping this check and going straight to a browser is the single most common waste of time.
+**Done when:** access is established, all currently visible planes are listed, each intended claim has an acceptance proof, and the run has a consequence ceiling.
 
-**Terrain D usually should not start.** Without credentials, a login-walled portal yields an inventory of what you *cannot* see, not a map. If the user wants that recon anyway, say plainly that the output will be a list of unknowns, and ask whether they can get an account first. See [gates.md](references/gates.md).
+Two profiles are traps worth naming up front:
+
+**A complete official surface is the one to hope for.** Always search official docs, specs, schemas, manuals, and SDKs first. Skipping this check and going straight to observation is the single most common waste of time.
+
+**Blocked access usually should not start.** Missing credentials, entitlement, physical possession, or authorization yields an inventory of unknowns, not a map. Say that before starting and name the exact unblocker. See [gates.md](references/gates.md).
 
 ## Phase 1: check for an official surface
 
-Run this before anything else, every time:
+Run this before anything else, every time. Official surfaces are not limited to HTTP:
 
 1. Search `{target} API documentation`, `{target} developer docs`, `{target} OpenAPI`, `{target} SDK`.
 2. Try the conventional spec paths directly: `/openapi.json`, `/swagger.json`, `/.well-known/openapi.json`, `/api/schema`, `/llms.txt`.
-3. Check npm/PyPI for an official SDK. An SDK's source is a documented API in disguise.
+3. For command planes, run help, version, schema, tool/resource enumeration, and inspect the official SDK or protocol package.
+4. For artifacts and devices, find file specifications, user and service manuals, descriptor definitions, update packages, and public protocol references.
+5. Record versions. Official behavior can drift by app build, OS, firmware, silicon, or toolchain.
 
 If you find a spec, read it and jump to Phase 4. Note the spec's own limitations: official docs are often incomplete rather than wrong, and the gap is what you need to reverse.
 
-**Done when:** either a spec is in hand, or the searched queries are written down so the report can say "none found, searched X".
+**Done when:** either authoritative material is in hand, or the searched queries and surfaces are written down so the report can say what was not found.
 
 ## Phase 2: observe real traffic
 
-For a target that speaks over a network (Terrains B through E, and G), watch what it actually does.
+For every listed network plane, watch what it actually does. Skip this phase when no network plane exists.
 
 **If it is a website with an internal JSON API, `derive-client` covers this phase end to end.** Record, identify endpoints among the noise, extract shapes and auth, verify. Run it:
 
@@ -103,25 +122,28 @@ The commands for capture and interception live in `agent-browser skills get core
 
 **Then go past observation.** A HAR tells you what the client sent; it does not tell you what it depends on. Aborting an endpoint reveals which calls are load-bearing, and mocking a response reveals which fields are decoration. That is where recon stops guessing. See [agent-browser-recon.md](references/agent-browser-recon.md).
 
-**Done when:** every flow the implementer needs has been driven at least twice, each captured request is attributable to an action you performed, and the HAR is saved. A capture you cannot map back to a click is noise.
-
-Terrains A, F, and H skip this phase: a spec, a file, and a device each answer to a different tool.
+**Done when:** every network flow the implementer needs has been driven at least twice, each captured request is attributable to an action, an independent replay proves requirements, and secret-bearing evidence is stored outside version control.
 
 ## Phase 3: dig where traffic is not enough
 
-When the network tab does not answer it:
+Route each non-network plane to its acceptance boundary:
 
 - **Introspection disabled on GraphQL** (403 on `__schema`): the schema is still in the client bundle. Grep the chunks for operation names and field selections.
 - **Request signing or custom headers**: the algorithm is in the bundle. Find the function that builds the header, then **verify by replaying a signed request outside the browser**. A signing algorithm you have not replayed is a hypothesis.
 - **Desktop app**: connect to it rather than unpacking it. Every Electron app exposes a debugging port, so its private API becomes observable with the same workflow as a web page (`agent-browser skills get electron`). Keep `asar list` and `strings` for what never runs: dead paths, embedded source layout, endpoints the UI does not reach.
+- **Mobile app**: correlate owned UI actions with proxy traffic, app logs, local artifacts, and static package inspection. Authentication by Google or Apple is not permission to extract or reuse third-party tokens. Banking and financial mutations remain outside an observational recon unless separately and explicitly authorized.
 - **React SPA**: `react tree` and `react inspect` give you the data model the client believes in, which is often cleaner than the API response. Needs `--enable react-devtools` at launch. **Check that the tree is not empty before relying on it**: a server-rendered app with few client components returns almost nothing, and a production build has mangled component names. It is a fast path, not a guarantee.
 - **Client-held state**: before deobfuscating a bundle, `eval` the framework globals. Hydration payloads and public config are frequently right there.
-- **Hardware or an accelerator**: the acceptance boundary is the compiler or runtime, not a network call. Export a real workload and count what gets rejected or silently falls back, then measure per compute unit to confirm where it actually ran.
+- **CLI, SDK, MCP, or daemon**: enumerate commands, methods, tools, resources, schemas, exit/status behavior, error envelopes, and state changes. A listed operation is enumeration evidence; a controlled call plus its resulting state is conformance evidence.
+- **Artifact**: inspect multiple real samples, optional fields, size, encodings, and version drift. Round-trip only through a disposable copy and compare normalized semantics rather than bytes alone.
+- **USB, BLE, serial, or HID**: enumerate first, observe passively, correlate one human action at a time, then replay one known read. A transport write proves delivery, not command acceptance. Mutations require a protocol receipt plus coherent post-state. Use the context matrix and mutation ladder in [hardware-protocol-recon.md](references/hardware-protocol-recon.md).
+- **Firmware**: begin with official update packages and offline extraction. Inventory signatures, encryption, compression, partitions, versions, and boot trust. Do not flash until image identity, backup, rollback, and recovery are independently verified.
+- **Runtime or accelerator**: export a real workload, count rejection or fallback, and measure per unit to prove where it ran. Aggregate success and aggregate power do not prove placement.
 - **BaaS client**: the bundle names the tables, columns, and views directly.
 
 Beware of large artifacts. A single minified file can be megabytes on one line; pipe to a file and grep the file rather than reading it into context.
 
-**Done when:** every unexplained request from Phase 2 is either resolved or listed under "Needs verification". A signing algorithm counts as resolved only after a replay outside the browser succeeds.
+**Done when:** every intended claim has the acceptance receipt selected in Phase 0 or is listed under "Needs verification" with the exact confirming action.
 
 ## Phase 4: write the outputs
 
@@ -135,7 +157,7 @@ The rule that governs it is the skill's own, made stricter: **only what you obse
 
 The full field-by-field mapping, which terrains produce an IR and which cannot, and how the two runs from Phase 2 fill the `varies` and `observations` fields on parameters, are in [ir-target.md](references/ir-target.md).
 
-**Done when:** every row of the endpoint table carries observed or inferred, every blocker names what got past it or that nothing did, and every "Needs verification" item names the step that would confirm it. Run [gates.md](references/gates.md) against the finished draft. If an IR was written, `surfacer lint recon/{siteName}.surfacer.json` passes and its endpoint count matches the observed rows of the report.
+**Done when:** every evidence row names plane, provenance, proof, and receipt; every blocker names what got past it or that nothing did; and every "Needs verification" item names the step that would confirm it. Run [gates.md](references/gates.md) against the finished draft. If an IR was written, `surfacer lint recon/{siteName}.surfacer.json` passes and its endpoint count matches the observed network rows of the report.
 
 ## Phase 5: verdict
 
@@ -154,8 +176,11 @@ State the maintenance risk plainly. An undocumented endpoint has no contract and
 ## References
 
 - [terrain-playbooks.md](references/terrain-playbooks.md): per-terrain technique, with what worked on real targets
+- [terrain-model.md](references/terrain-model.md): access, planes, acceptance proofs, consequence classes, and A-H migration
+- [practice-backlog.md](references/practice-backlog.md): ranked exercises across CLI, MCP, artifacts, apps, devices, firmware, and runtimes
 - [anti-bot.md](references/anti-bot.md): what blocks recon and what gets through
 - [agent-browser-recon.md](references/agent-browser-recon.md): interception, client state, React trees, desktop apps, session persistence
+- [hardware-protocol-recon.md](references/hardware-protocol-recon.md): USB, BLE, serial, Wi-Fi, storage, pairing, mutation gates, parsing, and evidence hygiene
 - [report-template.md](references/report-template.md): the report shape, with per-terrain variants
 - [ir-target.md](references/ir-target.md): the surfacer IR contract, field by field, and which terrains can produce one
 - [gates.md](references/gates.md): when to stop, and what to check before claiming a finding
@@ -167,6 +192,10 @@ State the maintenance risk plainly. An undocumented endpoint has no contract and
 
 **Report the rate limit you measured.** "No limit headers observed, not measured" is a complete answer.
 
-**Say what Terrain D yields before starting it.** Without credentials the output is a list of unknowns, and the user deserves to hear that first.
+**Say what blocked access yields before starting it.** Without credentials, entitlement, authority, or the physical target, the output is a list of unknowns.
 
 **Map a surface the user is entitled to use.** Recon works on services the user has access to and documentation they may read. A paywall, an authentication boundary you were not given, or personal data belonging to third parties marks the edge of the skill: the verdict there is "blocked", and that is a legitimate outcome.
+
+**Evidence does not transfer across planes.** A USB descriptor does not prove BLE semantics. A socket write does not prove a command was accepted. A command receipt does not prove a file was created. Correlate planes explicitly.
+
+**Discovery does not authorize mutation.** Stay within the maximum consequence declared in Phase 0. Ask before media creation, pairing, persistent settings, external actions, deletion, or firmware work. Firmware writes additionally require a verified recovery path.

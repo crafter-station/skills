@@ -105,7 +105,7 @@ Optional, and only worth filling when the response is HTML you had to parse rath
 
 **G, desktop app or binary.** Produces an IR when the app talks to a backend you observed over its debugging port, following the Terrain B rules. Local-only IPC has no HTTP surface.
 
-**H, hardware or an accelerator.** Produces no IR. The finding is a constraint set on a compiler or runtime, not a set of endpoints, and none of the IR's fields can carry it.
+**H, hardware or an accelerator.** An accelerator produces no IR because its finding is a compiler or runtime constraint set. A connected device produces an IR only for an HTTP plane observed after the relevant transport, pairing, and state-transition gates. BLE, USB, serial, storage, and firmware commands remain in the report because the current IR cannot represent them.
 
 ## Writing and validating
 
